@@ -1,0 +1,354 @@
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap');
+
+// ============================================================
+// PsyShop · Portada de Inicio (reemplaza todo tu archivo .scss)
+// ============================================================
+
+:host {
+  --void: #05060f;
+  --deck: #0c1024;
+  --deck-2: #121838;
+  --edge: rgba(130, 160, 255, 0.2);
+  --text: #e8ecff;
+  --dim: #8c95b8;
+  --cyan: #19e3ff;
+  --violet: #7a5cff;
+  --hot: #ff3d8b;
+
+  --sym-triangle: #3ddc97;
+  --sym-circle: #ff5d6c;
+  --sym-cross: #4da3ff;
+  --sym-square: #ff8fd1;
+
+  --font-display: 'Chakra Petch', 'Segoe UI', sans-serif;
+  --font-body: 'Barlow', 'Segoe UI', sans-serif;
+  --cut: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+}
+
+.home-content {
+  --background: var(--void);
+  --color: var(--text);
+  font-family: var(--font-body);
+
+  h1, h2, h3 { font-family: var(--font-display); margin: 0; color: var(--text); }
+  p { margin: 0; }
+}
+
+// ============================================================
+// HERO: suelo de rejilla en perspectiva + control gigante
+// ============================================================
+.welcome {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 56px 24px 72px;
+}
+
+// ---------- Video de fondo ----------
+.hero-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -4;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+// Capa oscura: mantiene legible el texto y funde el video con el resto de la página
+.hero-shade {
+  position: absolute;
+  inset: 0;
+  z-index: -3;
+  background:
+    linear-gradient(180deg, rgba(5, 6, 15, 0.55) 0%, rgba(5, 6, 15, 0.78) 70%, var(--void) 100%),
+    linear-gradient(90deg, rgba(5, 6, 15, 0.7), transparent 80%);
+}
+
+.floor {
+  position: absolute;
+  left: -30%;
+  right: -30%;
+  bottom: 0;
+  height: 55%;
+  z-index: -1;
+  background-image:
+    linear-gradient(var(--edge) 1px, transparent 1px),
+    linear-gradient(90deg, var(--edge) 1px, transparent 1px);
+  background-size: 48px 48px;
+  transform: perspective(420px) rotateX(62deg);
+  transform-origin: bottom;
+  mask-image: linear-gradient(to top, #000 10%, transparent 90%);
+  -webkit-mask-image: linear-gradient(to top, #000 10%, transparent 90%);
+  animation: floor-move 6s linear infinite;
+}
+
+@keyframes floor-move {
+  to { background-position: 0 48px, 0 0; }
+}
+
+.glow {
+  position: absolute;
+  top: -80px;
+  right: -120px;
+  width: 420px;
+  height: 420px;
+  z-index: -2;
+  background: radial-gradient(circle, rgba(122, 92, 255, 0.5), transparent 65%);
+  filter: blur(18px);
+}
+
+.hero-icon {
+  position: absolute;
+  right: -28px;
+  top: 28px;
+  z-index: -1;
+  font-size: 190px;
+  color: var(--cyan);
+  opacity: 0.16;
+  transform: rotate(-14deg);
+}
+
+.pill {
+  display: inline-block;
+  margin-bottom: 20px !important;
+  padding: 5px 14px;
+  border: 1px solid var(--cyan);
+  color: var(--cyan);
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 600;
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+}
+
+.welcome h1 {
+  font-size: clamp(2.5rem, 11vw, 4.6rem);
+  line-height: 1.02;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+}
+
+.line-2 {
+  display: block;
+  background: linear-gradient(90deg, var(--cyan), var(--violet) 60%, var(--hot));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.description {
+  max-width: 44ch;
+  margin-top: 20px !important;
+  color: var(--dim);
+  font-size: 1.1rem;
+  line-height: 1.55;
+}
+
+.primary-button {
+  max-width: 340px;
+  margin: 32px 0 0;
+  --background: linear-gradient(120deg, var(--cyan), var(--violet));
+  --color: #031018;
+  --border-radius: 0;
+  --box-shadow: none;
+  --padding-top: 18px;
+  --padding-bottom: 18px;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  clip-path: var(--cut);
+}
+
+// ============================================================
+// BENEFICIOS
+// ============================================================
+.benefits {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 12px;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.benefit {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  background: var(--deck);
+  border: 1px solid var(--edge);
+  clip-path: var(--cut);
+
+  ion-icon { font-size: 30px; color: var(--cyan); flex: 0 0 auto; }
+
+  strong { display: block; font-family: var(--font-display); font-size: 1.05rem; }
+  span { color: var(--dim); font-size: 0.9rem; }
+}
+
+// ============================================================
+// BLOQUES
+// ============================================================
+.block {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 56px 24px 0;
+
+  h2 { font-size: clamp(1.5rem, 5vw, 2.1rem); }
+}
+
+.block-sub {
+  margin-top: 6px !important;
+  color: var(--dim);
+}
+
+// ---------- Tipos de juego ----------
+.genre-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.genre-tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 132px;
+  padding: 18px;
+  justify-content: flex-end;
+  background: var(--deck);
+  border: 1px solid var(--edge);
+  color: var(--text);
+  text-decoration: none;
+  clip-path: var(--cut);
+  transition: background 0.2s, border-color 0.2s;
+
+  strong { font-family: var(--font-display); font-size: 1.3rem; }
+  span { color: var(--dim); font-size: 0.88rem; }
+
+  // Símbolo grande de control en la esquina: △ ○ ✕ □
+  &::before {
+    position: absolute;
+    top: 8px;
+    left: 16px;
+    font-family: var(--font-display);
+    font-size: 2.6rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+  &[data-sym='0']::before { content: '△'; color: var(--sym-triangle); }
+  &[data-sym='1']::before { content: '○'; color: var(--sym-circle); }
+  &[data-sym='2']::before { content: '✕'; color: var(--sym-cross); }
+  &[data-sym='3']::before { content: '□'; color: var(--sym-square); }
+
+  &:hover, &:active { background: var(--deck-2); border-color: var(--cyan); }
+  &:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+}
+
+// ---------- Pasos (sí es una secuencia, por eso va numerada) ----------
+.steps {
+  list-style: none;
+  margin: 24px 0 0;
+  padding: 0;
+  counter-reset: paso;
+  display: grid;
+  gap: 0;
+}
+
+.steps li {
+  counter-increment: paso;
+  position: relative;
+  padding: 0 0 26px 62px;
+
+  // Línea que une los pasos
+  &:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 21px;
+    top: 46px;
+    bottom: 4px;
+    width: 2px;
+    background: linear-gradient(var(--cyan), transparent);
+  }
+
+  &::before {
+    content: counter(paso);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    border: 2px solid var(--cyan);
+    border-radius: 50%;
+    color: var(--cyan);
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    font-weight: 700;
+  }
+
+  strong { display: block; padding-top: 2px; font-family: var(--font-display); font-size: 1.15rem; }
+  span { display: block; margin-top: 2px; color: var(--dim); }
+}
+
+// ---------- Tarjeta destacada ----------
+.featured-card {
+  margin: 0;
+  padding: 1px;
+  background: linear-gradient(150deg, var(--cyan), var(--violet) 55%, var(--hot));
+  border-radius: 0;
+  box-shadow: none;
+  clip-path: var(--cut);
+
+  ion-card-content {
+    padding: 32px 24px;
+    background:
+      radial-gradient(circle at 85% 0%, rgba(122, 92, 255, 0.35), transparent 60%),
+      var(--deck);
+    clip-path: var(--cut);
+    color: var(--text);
+  }
+
+  ion-icon { font-size: 40px; color: var(--cyan); }
+  h3 { margin-top: 10px; font-size: 1.8rem; }
+  p { margin-top: 8px; max-width: 36ch; color: var(--dim); font-size: 1.05rem; line-height: 1.5; }
+}
+
+.secondary-button {
+  margin: 22px 0 0;
+  --color: var(--text);
+  --border-color: var(--cyan);
+  --border-width: 1px;
+  --border-radius: 0;
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+
+// ---------- Pantallas anchas ----------
+@media (min-width: 768px) {
+  .welcome {
+    margin-top: 16px;
+    padding: 96px 32px 112px;
+    clip-path: var(--cut);
+  }
+  .hero-icon { font-size: 320px; right: 0; top: 40px; }
+  .benefits, .block { padding-left: 32px; padding-right: 32px; }
+  .genre-grid { grid-template-columns: repeat(4, 1fr); }
+  .steps { grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .steps li {
+    padding: 58px 0 0;
+    &:not(:last-child)::after { display: none; }
+  }
+}
+
+// Respeta a quien prefiere menos movimiento: sin video ni animación
+@media (prefers-reduced-motion: reduce) {
+  .floor { animation: none; }
+ 
+}

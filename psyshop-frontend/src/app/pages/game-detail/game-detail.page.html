@@ -1,0 +1,141 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="top-bar">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home" text="Volver"></ion-back-button>
+    </ion-buttons>
+
+    <ion-title>
+      <span class="brand">Psy<span class="brand-accent">Shop</span></span>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="game-detail-content">
+
+  @if (loading) {
+    <div class="state-message">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Cargando videojuego...</p>
+    </div>
+  } @else if (errorMessage) {
+    <div class="state-message">
+      <ion-text color="danger">
+        <p>{{ errorMessage }}</p>
+      </ion-text>
+
+      <ion-button routerLink="/home" class="back-catalog-button">
+        Volver al catálogo
+      </ion-button>
+    </div>
+  } @else if (game) {
+    <div class="detail">
+
+      <!-- Portada desenfocada como ambiente de fondo -->
+      @if (game.image_url) {
+        <div class="backdrop" aria-hidden="true"
+             [style.backgroundImage]="'url(' + game.image_url + ')'"></div>
+      }
+
+      <div class="detail-container">
+
+        <!-- ============ PORTADA ============ -->
+        <div class="game-cover">
+          <div class="cover-frame">
+            @if (game.image_url) {
+              <ion-img [src]="game.image_url" [alt]="game.title"></ion-img>
+            } @else {
+              <div class="cover-placeholder">
+                <span class="placeholder-brand">PsyShop</span>
+                <ion-text>{{ game.platform }}</ion-text>
+                <span class="placeholder-title">{{ game.title }}</span>
+              </div>
+            }
+            <span class="cover-badge">{{ game.platform }}</span>
+          </div>
+        </div>
+
+        <!-- ============ INFORMACIÓN ============ -->
+        <div class="game-information">
+
+          <p class="genre">{{ game.genre || 'Videojuego' }}</p>
+
+          <h1>{{ game.title }}</h1>
+
+          <!-- Ficha del juego -->
+          <dl class="spec-sheet">
+            <div>
+              <dt>Plataforma</dt>
+              <dd>{{ game.platform }}</dd>
+            </div>
+            <div>
+              <dt>Género</dt>
+              <dd>{{ game.genre || 'Videojuego' }}</dd>
+            </div>
+            <div>
+              <dt>Stock</dt>
+              <dd>{{ game.stock > 0 ? game.stock + ' unidades' : 'Sin stock' }}</dd>
+            </div>
+          </dl>
+
+          <div class="description-block">
+            <h2 class="block-title">Sobre este juego</h2>
+            <p class="description">
+              {{ game.description || 'No hay descripción disponible para este videojuego.' }}
+            </p>
+          </div>
+
+          <!-- ============ BLOQUE DE COMPRA ============ -->
+          <div class="buy-panel">
+            <div class="price-section">
+              <span class="price-label">Precio</span>
+              <strong class="price">{{ game.price | currency:'USD' }}</strong>
+            </div>
+
+            <div class="stock-information">
+              @if (game.stock > 0) {
+                <span class="stock-dot" [class.low]="game.stock <= 5"></span>
+                <span>{{ game.stock <= 5 ? 'Últimas unidades' : 'Disponible' }}</span>
+              } @else {
+                <span class="out-of-stock">Agotado</span>
+              }
+            </div>
+
+            <!--
+              OPCIONAL: botón de agregar al carrito.
+              Descomenta este bloque cuando esta página tenga un método
+              agregarAlCarrito(game) en su archivo .ts
+            -->
+            <!--
+            <ion-button
+              expand="block"
+              class="add-cart-button"
+              [disabled]="game.stock <= 0"
+              (click)="agregarAlCarrito(game)">
+              <ion-icon name="cart-outline" slot="start"></ion-icon>
+              Agregar al carrito
+            </ion-button>
+            -->
+
+            <ion-button
+              expand="block"
+              routerLink="/home"
+              class="back-catalog-button">
+              Volver al catálogo
+            </ion-button>
+
+            <ion-button
+              expand="block"
+              fill="clear"
+              routerLink="/cart"
+              class="cart-link-button">
+              Ir al carrito
+            </ion-button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  }
+
+
+</ion-content>

@@ -1,0 +1,111 @@
+/*
+ * App Global CSS
+ * ----------------------------------------------------------------------------
+ * Put style rules here that you want to apply globally. These styles are for
+ * the entire app and not just one component. Additionally, this file can be
+ * used as an entry point to import other CSS/Sass files to be included in the
+ * output CSS.
+ * For more information on global stylesheets, visit the documentation:
+ * https://ionicframework.com/docs/layout/global-stylesheets
+ */
+
+/* Core CSS required for Ionic components to work properly */
+@import "@ionic/angular/css/core.css";
+
+/* Basic CSS for apps built with Ionic */
+@import "@ionic/angular/css/normalize.css";
+@import "@ionic/angular/css/structure.css";
+@import "@ionic/angular/css/typography.css";
+@import "@ionic/angular/css/display.css";
+
+/* Optional CSS utils that can be commented out */
+@import "@ionic/angular/css/padding.css";
+@import "@ionic/angular/css/float-elements.css";
+@import "@ionic/angular/css/text-alignment.css";
+@import "@ionic/angular/css/text-transformation.css";
+@import "@ionic/angular/css/flex-utils.css";
+
+/**
+ * Ionic Dark Mode
+ * -----------------------------------------------------
+ * For more info, please see:
+ * https://ionicframework.com/docs/theming/dark-mode
+ */
+
+/* @import "@ionic/angular/css/palettes/dark.always.css"; */
+/* @import "@ionic/angular/css/palettes/dark.class.css"; */
+@import '@ionic/angular/css/palettes/dark.system.css';
+// ============================================================
+// PsyShop · Avisos (toast)
+// PEGA ESTO AL FINAL de src/global.scss (no en el .scss de la página,
+// porque el toast se dibuja fuera del componente).
+// ============================================================
+
+ion-toast.psy-toast {
+  --background: #0c1024;
+  --color: #e8ecff;
+  --border-color: #19e3ff;
+  --border-width: 1px;
+  --border-style: solid;
+  --border-radius: 0;
+  --box-shadow: 0 0 28px rgba(25, 227, 255, 0.22), 0 8px 24px rgba(0, 0, 0, 0.5);
+  --button-color: #19e3ff;
+  // Tamaño compacto
+  --max-width: 340px;
+  --width: calc(100% - 40px);
+  --min-height: 0;
+  --height: auto;
+
+  font-family: 'Barlow', 'Segoe UI', sans-serif;
+
+  &::part(header) {
+    margin: 0;
+    font-family: 'Chakra Petch', 'Segoe UI', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: #19e3ff;
+  }
+
+  &::part(message) {
+    margin: 0;
+    padding: 0;
+    font-size: 0.85rem;
+    line-height: 1.25;
+  }
+
+  &::part(button) {
+    min-height: 0;
+    padding: 4px 8px;
+    font-family: 'Chakra Petch', 'Segoe UI', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+
+  // Esquina cortada, igual que el resto de la tienda
+  &::part(container) {
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+    background:
+      linear-gradient(90deg, rgba(25, 227, 255, 0.14), transparent 40%),
+      #0c1024;
+  }
+}
+
+// Cuando hay barra de pestañas abajo, el aviso se sube para no taparla
+ion-toast.psy-toast--above-tabs::part(container) {
+  margin-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+}
+
+// Variante de error (sin stock, límite alcanzado, fallo de red)
+ion-toast.psy-toast--error {
+  --border-color: #ff3d8b;
+  --box-shadow: 0 0 28px rgba(255, 61, 139, 0.22), 0 8px 24px rgba(0, 0, 0, 0.5);
+  --button-color: #ff3d8b;
+
+  &::part(header) { color: #ff3d8b; }
+  &::part(container) {
+    background:
+      linear-gradient(90deg, rgba(255, 61, 139, 0.16), transparent 40%),
+      #0c1024;
+  }
+}

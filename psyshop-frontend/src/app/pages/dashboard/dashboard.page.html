@@ -1,0 +1,132 @@
+<ion-content [fullscreen]="true" class="home-content">
+
+  <!-- ============ HERO ============ -->
+  <section class="welcome">
+    <!-- Video de fondo: sin sonido, en bucle y sin controles -->
+    <video
+      #heroVideo
+      class="hero-video"
+      autoplay
+      muted
+      loop
+      playsinline
+      preload="auto"
+      poster="assets/videos/banner.jpg"
+      aria-hidden="true">
+      <source src="assets/videos/bannerps.mp4" type="video/mp4">
+    </video>
+    <div class="hero-shade" aria-hidden="true"></div>
+
+    <div class="floor" aria-hidden="true"></div>
+    <div class="glow" aria-hidden="true"></div>
+    <ion-icon class="hero-icon" name="game-controller-outline" aria-hidden="true"></ion-icon>
+
+    <p class="pill">Bienvenido a PsyShop</p>
+
+    <h1>
+      Tu próximo juego
+      <span class="line-2">comienza aquí.</span>
+    </h1>
+
+    <p class="description">
+      Descubre grandes aventuras, clásicos inolvidables
+      y las últimas novedades del mundo gamer.
+    </p>
+
+    <ion-button
+      expand="block"
+      class="primary-button"
+      routerLink="/tabs/catalogo">
+      Explorar catálogo
+    </ion-button>
+  </section>
+
+  <!-- ============ BENEFICIOS ============ -->
+  <section class="benefits">
+    <div class="benefit">
+      <ion-icon name="game-controller-outline"></ion-icon>
+      <div>
+        <strong>Juegos físicos</strong>
+        <span>Para tu consola</span>
+      </div>
+    </div>
+
+    <div class="benefit">
+      <ion-icon name="shield-checkmark-outline"></ion-icon>
+      <div>
+        <strong>Compra segura</strong>
+        <span>Experiencia confiable</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ EXPLORA POR TIPO DE JUEGO ============ -->
+  <section class="block">
+    <h2>¿Qué quieres jugar hoy?</h2>
+    <p class="block-sub">Elige un estilo y encuentra tu siguiente favorito.</p>
+
+    <div class="genre-grid">
+      <a class="genre-tile" data-sym="0" routerLink="/tabs/catalogo">
+        <strong>Acción</strong>
+        <span>Combate y adrenalina</span>
+      </a>
+
+      <a class="genre-tile" data-sym="1" routerLink="/tabs/catalogo">
+        <strong>Deportes</strong>
+        <span>Fútbol y más</span>
+      </a>
+
+      <a class="genre-tile" data-sym="2" routerLink="/tabs/catalogo">
+        <strong>Carreras</strong>
+        <span>Velocidad sin freno</span>
+      </a>
+
+      <a class="genre-tile" data-sym="3" routerLink="/tabs/catalogo">
+        <strong>Aventura</strong>
+        <span>Mundos por descubrir</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ============ CÓMO COMPRAR ============ -->
+  <section class="block">
+    <h2>Compra en tres pasos</h2>
+
+    <ol class="steps">
+      <li>
+        <strong>Explora el catálogo</strong>
+        <span>Busca por nombre, plataforma o género.</span>
+      </li>
+      <li>
+        <strong>Agrega al carrito</strong>
+        <span>Revisa precio y disponibilidad antes de decidir.</span>
+      </li>
+      <li>
+        <strong>Finaliza tu compra</strong>
+        <span>Confirma tu pedido desde el carrito.</span>
+      </li>
+    </ol>
+  </section>
+
+  <!-- ============ TARJETA DESTACADA ============ -->
+  <section class="block">
+    <ion-card class="featured-card">
+      <ion-card-content>
+        <ion-icon name="trophy-outline"></ion-icon>
+
+        <h3>Grandes juegos.</h3>
+
+        <p>Momentos épicos que merecen estar en tu colección.</p>
+
+        <ion-button
+          fill="outline"
+          class="secondary-button"
+          routerLink="/tabs/catalogo">
+          Ver videojuegos
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+  </section>
+
+
+</ion-content>

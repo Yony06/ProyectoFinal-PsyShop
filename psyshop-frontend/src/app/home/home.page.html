@@ -1,0 +1,269 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="top-bar">
+    <ion-title>
+      <span class="logo">Psy<span class="logo-accent">Shop</span></span>
+    </ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button routerLink="/cart" aria-label="Abrir carrito" class="cart-button">
+        <ion-icon name="cart-outline" slot="start"></ion-icon>
+        Carrito
+        <span class="cart-count">{{ totalItemsCarrito }}</span>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <main class="store">
+
+    <!-- ============ HERO ============ -->
+    <section class="hero">
+      <!-- Banner de fondo (ocupa todo el ancho de la pantalla) -->
+      <img class="hero-banner" src="assets/videos/banner.jpg" alt="" aria-hidden="true">
+      <div class="hero-shade" aria-hidden="true"></div>
+
+      <div class="hero-grid-floor" aria-hidden="true"></div>
+      <div class="hero-glow" aria-hidden="true"></div>
+
+      <div class="hero-content">
+        <h1>
+          Tu próxima aventura
+          <span class="hero-line-2">comienza aquí.</span>
+        </h1>
+
+        <p class="hero-lead">
+          Videojuegos para PlayStation 4 y PlayStation 5. Elige, compra y
+          empieza a jugar.
+        </p>
+
+        <div class="hero-actions">
+          <button type="button" class="btn-neon" (click)="explorarCatalogo()">
+            Explorar catálogo
+          </button>
+          <a class="btn-ghost" routerLink="/cart">Ver carrito</a>
+        </div>
+
+        <dl class="hero-stats">
+          <div>
+            <dt>Juegos</dt>
+            <dd>{{ games.length }}</dd>
+          </div>
+          <div>
+            <dt>Plataformas</dt>
+            <dd>{{ platforms.length }}</dd>
+          </div>
+          <div>
+            <dt>Géneros</dt>
+            <dd>{{ genres.length }}</dd>
+          </div>
+        </dl>
+      </div>
+
+      <!-- Juego destacado (primer juego del catálogo) -->
+      <div class="hero-showcase">
+        @for (g of games.slice(0, 1); track g.id) {
+          <a class="featured" [routerLink]="['/game-detail', g.id]"
+             [attr.aria-label]="'Ver detalles de ' + g.title">
+            <div class="featured-cover">
+              @if (g.image_url) {
+                <ion-img [src]="g.image_url" [alt]="g.title"></ion-img>
+              } @else {
+                <div class="game-placeholder">
+                  <span class="placeholder-logo">PsyShop</span>
+                  <span class="placeholder-title">{{ g.title }}</span>
+                </div>
+              }
+            </div>
+            <div class="featured-info">
+              <span class="featured-tag">Destacado</span>
+              <strong>{{ g.title }}</strong>
+              <span class="featured-meta">{{ g.platform }}</span>
+              <span class="featured-price">{{ g.price | currency:'USD' }}</span>
+            </div>
+          </a>
+        } @empty {
+          <div class="showcase-empty" aria-hidden="true">
+            Psy<span>SHOP</span>
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- ============ ELIGE TU CONSOLA ============ -->
+    <section class="consoles" aria-labelledby="consoles-title">
+      <h2 id="consoles-title" class="section-title">Elige tu consola</h2>
+
+      <div class="console-grid">
+        <button type="button" class="console-tile"
+                [class.active]="!selectedPlatform"
+                (click)="filtrarPlataforma(''); explorarCatalogo()">
+          <span class="console-name">Todas</span>
+          <span class="console-sub">Todo el catálogo</span>
+        </button>
+
+        @for (platform of platforms; track platform; let i = $index) {
+          <button type="button" class="console-tile"
+                  [attr.data-sym]="i % 4"
+                  [class.active]="selectedPlatform === platform"
+                  (click)="filtrarPlataforma(platform); explorarCatalogo()">
+            <span class="console-name">{{ platform }}</span>
+            <span class="console-sub">Ver juegos</span>
+          </button>
+        }
+      </div>
+    </section>
+
+    <!-- ============ AVISO DE CARRITO ============ -->
+    @if (totalItemsCarrito > 0) {
+      <section class="cart-strip">
+        <p>
+          Tienes <strong>{{ totalItemsCarrito }}</strong>
+          {{ totalItemsCarrito === 1 ? 'juego' : 'juegos' }} esperando en tu carrito.
+        </p>
+        <a class="btn-neon btn-small" routerLink="/cart">Finalizar compra</a>
+      </section>
+    }
+
+    <!-- ============ CATÁLOGO ============ -->
+    <section class="catalog" id="catalogo">
+      <div class="catalog-heading">
+        <div>
+          <h2>Videojuegos destacados</h2>
+          <p class="catalog-sub">Encuentra tu próxima aventura.</p>
+        </div>
+        <span class="catalog-count">{{ filteredGames.length }} de {{ games.length }}</span>
+      </div>
+
+      <div class="filter-bar">
+        <ion-searchbar
+          class="search"
+          placeholder="Buscar videojuegos..."
+          aria-label="Buscar videojuegos"
+          [debounce]="200"
+          (ionInput)="onSearch($event)"
+          [value]="searchTerm">
+        </ion-searchbar>
+
+        <button type="button" class="btn-ghost btn-small" (click)="clearFilters()">
+          Limpiar filtros
+        </button>
+      </div>
+
+      <div class="genre-chips" role="group" aria-label="Filtrar por género">
+        <button type="button" class="chip"
+                [class.active]="!selectedGenre"
+                (click)="filtrarGenero('')">
+          Todos
+        </button>
+
+        @for (genre of genres; track genre) {
+          <button type="button" class="chip"
+                  [class.active]="selectedGenre === genre"
+                  (click)="filtrarGenero(genre)">
+            {{ genre }}
+          </button>
+        }
+      </div>
+
+      @if (loading) {
+        <div class="state-box">
+          <ion-spinner name="crescent"></ion-spinner>
+          <p>Cargando catálogo...</p>
+        </div>
+      }
+
+      @if (errorMessage) {
+        <p class="error-message">{{ errorMessage }}</p>
+      }
+
+      @if (!loading && !errorMessage && games.length === 0) {
+        <div class="state-box">
+          <h3>Pronto habrá novedades</h3>
+          <p>No hay videojuegos disponibles en este momento.</p>
+        </div>
+      }
+
+      @if (!loading && games.length > 0 && filteredGames.length === 0) {
+        <div class="state-box">
+          <h3>Sin resultados</h3>
+          <p>Prueba con otro nombre o limpia los filtros.</p>
+          <button type="button" class="btn-ghost btn-small" (click)="clearFilters()">
+            Limpiar filtros
+          </button>
+        </div>
+      }
+
+      <div class="game-grid">
+        @for (game of filteredGames; track game.id) {
+          <article class="game-card">
+            <div class="game-card-body">
+
+              <div class="game-art">
+                @if (game.image_url) {
+                  <ion-img [src]="game.image_url" [alt]="game.title"></ion-img>
+                } @else {
+                  <div class="game-placeholder">
+                    <span class="placeholder-logo">PsyShop</span>
+                    <span class="placeholder-platform">{{ game.platform }}</span>
+                    <span class="placeholder-title">{{ game.title }}</span>
+                  </div>
+                }
+                <span class="platform-badge">{{ game.platform }}</span>
+              </div>
+
+              <div class="game-info">
+                <p class="game-genre">{{ game.genre || 'Videojuego' }}</p>
+                <h3>{{ game.title }}</h3>
+
+                @if (game.description) {
+                  <p class="game-description">{{ game.description }}</p>
+                }
+
+                <div class="game-footer">
+                  <strong class="game-price">{{ game.price | currency:'USD' }}</strong>
+                  <span class="stock" [class.out]="game.stock <= 0">
+                    {{ game.stock > 0 ? 'Disponible' : 'Agotado' }}
+                  </span>
+                </div>
+
+                <div class="game-actions">
+                  <ion-button class="btn-cart" expand="block"
+                              [disabled]="game.stock <= 0"
+                              (click)="agregarAlCarrito(game)">
+                    <ion-icon name="cart-outline" slot="start"></ion-icon>
+                    Agregar al carrito
+                  </ion-button>
+
+                  <ion-button class="btn-detail" expand="block" fill="clear"
+                              [routerLink]="['/game-detail', game.id]">
+                    Ver detalles
+                  </ion-button>
+                </div>
+              </div>
+
+            </div>
+          </article>
+        }
+      </div>
+    </section>
+
+    <!-- ============ BENEFICIOS (edita los textos a tu gusto) ============ -->
+    <section class="perks" aria-label="Por qué comprar en PsyShop">
+      <div class="perk">
+        <strong>Stock a la vista</strong>
+        <p>Cada juego indica si está disponible o agotado.</p>
+      </div>
+      <div class="perk">
+        <strong>Precios en dólares</strong>
+        <p>Sin conversiones ni sorpresas al pagar.</p>
+      </div>
+      <div class="perk">
+        <strong>Soporte directo</strong>
+        <p>Escríbenos y resolvemos tus dudas.</p>
+      </div>
+    </section>
+
+
+  </main>
+</ion-content>

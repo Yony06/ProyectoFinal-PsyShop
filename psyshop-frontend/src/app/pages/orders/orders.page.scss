@@ -1,0 +1,301 @@
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap');
+
+// ============================================================
+// PsyShop · Mis pedidos (reemplaza todo tu archivo .scss)
+// ============================================================
+
+:host {
+  --void: #05060f;
+  --deck: #0c1024;
+  --deck-2: #121838;
+  --edge: rgba(130, 160, 255, 0.2);
+  --text: #e8ecff;
+  --dim: #8c95b8;
+  --cyan: #19e3ff;
+  --violet: #7a5cff;
+  --hot: #ff3d8b;
+  --ok: #3ddc97;
+  --warn: #ffb02e;
+
+  --font-display: 'Chakra Petch', 'Segoe UI', sans-serif;
+  --font-body: 'Barlow', 'Segoe UI', sans-serif;
+  --cut: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+}
+
+// ---------- Barra superior ----------
+.top-bar {
+  --background: rgba(5, 6, 15, 0.92);
+  --color: var(--text);
+  --border-width: 0;
+  border-bottom: 1px solid var(--edge);
+}
+
+.brand {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: var(--text);
+}
+.brand-accent { color: var(--cyan); }
+
+.title-section {
+  margin-left: 12px;
+  padding-left: 12px;
+  border-left: 1px solid var(--edge);
+  color: var(--dim);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+// ---------- Base ----------
+.orders-content {
+  --background: var(--void);
+  --color: var(--text);
+  font-family: var(--font-body);
+
+  h1, h2, h3 { font-family: var(--font-display); margin: 0; color: var(--text); }
+  p { margin: 0; }
+}
+
+.orders-container {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 28px 20px 8px;
+}
+
+// ============================================================
+// ENCABEZADO
+// ============================================================
+.orders-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 32px 24px;
+  background: var(--deck);
+  border: 1px solid var(--edge);
+  clip-path: var(--cut);
+
+  h1 {
+    font-size: clamp(2rem, 7vw, 3rem);
+    line-height: 1.05;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  p { margin-top: 8px; max-width: 40ch; color: var(--dim); line-height: 1.5; }
+}
+
+.hero-glow {
+  position: absolute;
+  top: -120px;
+  right: -80px;
+  width: 360px;
+  height: 360px;
+  z-index: -1;
+  background: radial-gradient(circle, rgba(122, 92, 255, 0.45), transparent 65%);
+  filter: blur(14px);
+}
+
+.hero-icon {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 84px;
+  height: 84px;
+  border: 2px solid var(--cyan);
+  border-radius: 50%;
+  box-shadow: 0 0 24px rgba(25, 227, 255, 0.25);
+
+  ion-icon { font-size: 40px; color: var(--cyan); }
+}
+
+// ============================================================
+// RESUMEN (estadísticas)
+// ============================================================
+.orders-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.stat-card {
+  --accent: var(--cyan);
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 18px 16px 16px;
+  background: var(--deck);
+  border: 1px solid var(--edge);
+  border-top: 3px solid var(--accent);
+  clip-path: var(--cut);
+
+  ion-icon { font-size: 24px; color: var(--accent); margin-bottom: 6px; }
+
+  strong {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    line-height: 1;
+    color: var(--text);
+  }
+  span { color: var(--dim); font-size: 0.88rem; }
+}
+
+.stat-pending { --accent: var(--warn); }
+.stat-done { --accent: var(--ok); }
+
+// ============================================================
+// HISTORIAL
+// ============================================================
+.orders-section { margin-top: 40px; }
+
+.section-heading {
+  margin-bottom: 16px;
+  h2 { font-size: clamp(1.4rem, 4vw, 1.9rem); }
+}
+
+// ---------- Estado vacío ----------
+.orders-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 52px 20px;
+  text-align: center;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(122, 92, 255, 0.22), transparent 60%),
+    var(--deck);
+  border: 1px solid var(--edge);
+  clip-path: var(--cut);
+
+  h3 { font-size: 1.5rem; }
+  p { max-width: 38ch; margin-bottom: 14px; color: var(--dim); line-height: 1.55; }
+}
+
+.empty-icon {
+  display: grid;
+  place-items: center;
+  width: 88px;
+  height: 88px;
+  margin-bottom: 8px;
+  border: 2px dashed var(--cyan);
+  border-radius: 50%;
+
+  ion-icon { font-size: 42px; color: var(--cyan); }
+}
+
+.primary-button {
+  margin: 0;
+  --background: linear-gradient(120deg, var(--cyan), var(--violet));
+  --color: #031018;
+  --border-radius: 0;
+  --box-shadow: none;
+  --padding-top: 16px;
+  --padding-bottom: 16px;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  clip-path: var(--cut);
+}
+
+// ============================================================
+// TARJETAS DE PEDIDO (listas para cuando conectes el historial)
+// ============================================================
+.order-card {
+  margin-bottom: 12px;
+  padding: 1px;
+  background: linear-gradient(150deg, var(--edge), transparent 65%);
+  clip-path: var(--cut);
+}
+
+.order-card-body {
+  padding: 16px 18px;
+  background: var(--deck);
+  clip-path: var(--cut);
+}
+
+.order-head,
+.order-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.order-meta {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--edge);
+  color: var(--dim);
+}
+
+.order-label { display: block; color: var(--dim); font-size: 0.8rem; }
+.order-id { font-family: var(--font-display); font-size: 1.2rem; }
+.order-total { font-family: var(--font-display); font-size: 1.4rem; color: var(--cyan); }
+
+.status {
+  padding: 3px 12px;
+  border: 1px solid var(--dim);
+  color: var(--dim);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-transform: capitalize;
+
+  &.pending { border-color: var(--warn); color: var(--warn); }
+  &.done { border-color: var(--ok); color: var(--ok); }
+}
+
+// ---------- Pantallas anchas ----------
+@media (min-width: 768px) {
+  .orders-container { padding: 48px 32px 16px; }
+  .orders-hero { padding: 44px 40px; }
+  .hero-icon { width: 108px; height: 108px; ion-icon { font-size: 52px; } }
+  .stat-card { padding: 22px 22px 20px; strong { font-size: 2.6rem; } }
+}
+
+// Pantallas muy angostas: las estadísticas pasan a una columna
+@media (max-width: 400px) {
+  .orders-stats { grid-template-columns: 1fr; }
+  .hero-icon { display: none; }
+}
+
+// ============================================================
+// AÑADIDOS PARA LA VERSIÓN CONECTADA
+// ============================================================
+
+// Spinner del estado de carga
+.orders-empty ion-spinner {
+  --color: var(--cyan);
+  width: 36px;
+  height: 36px;
+  margin-bottom: 6px;
+}
+
+// Productos dentro de cada pedido
+.order-items {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 12px 0 0;
+  border-top: 1px solid var(--edge);
+  display: grid;
+  gap: 6px;
+
+  li {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    color: var(--text);
+    font-size: 0.95rem;
+
+    span:last-child { color: var(--dim); white-space: nowrap; }
+  }
+}
+
+// Estado cancelado
+.status.cancelled { border-color: var(--hot); color: var(--hot); }

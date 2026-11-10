@@ -1,0 +1,176 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="top-bar">
+    <ion-title>
+      <span class="brand">Psy<span class="brand-accent">Shop</span></span>
+      <span class="title-section">Mi carrito</span>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="cart-content">
+  <main class="cart-container">
+
+    <!-- ============ ENCABEZADO ============ -->
+    <section class="cart-heading">
+      <div>
+        <h1>Mi carrito</h1>
+        <p>Revisa tus videojuegos antes de continuar.</p>
+      </div>
+
+      @if (items.length > 0) {
+        <ion-button
+          fill="clear"
+          class="clear-button"
+          (click)="vaciarCarrito()">
+          <ion-icon name="trash-outline" slot="start"></ion-icon>
+          Vaciar carrito
+        </ion-button>
+      }
+    </section>
+
+    @if (items.length === 0) {
+
+      <!-- ============ CARRITO VACÍO ============ -->
+      <section class="empty-cart">
+        <div class="empty-icon">
+          <ion-icon name="cart-outline"></ion-icon>
+        </div>
+
+        <h2>Tu carrito está vacío</h2>
+        <p>Explora nuestro catálogo y encuentra tu próxima aventura.</p>
+
+        <ion-button routerLink="/tabs/catalogo" class="primary-button">
+          Explorar videojuegos
+        </ion-button>
+      </section>
+
+    } @else {
+      <div class="cart-layout">
+
+        <!-- ============ PRODUCTOS ============ -->
+        <section class="cart-products">
+          <div class="products-count">
+            {{ totalItems }} {{ totalItems === 1 ? 'unidad seleccionada' : 'unidades seleccionadas' }}
+          </div>
+
+          @for (item of items; track item.game.id) {
+            <article class="cart-item">
+              <div class="cart-item-body">
+
+                <div class="product-image">
+                  @if (item.game.image_url) {
+                    <ion-img
+                      [src]="item.game.image_url"
+                      [alt]="item.game.title">
+                    </ion-img>
+                  } @else {
+                    <div class="image-placeholder">
+                      <ion-icon name="game-controller-outline"></ion-icon>
+                      <span>PsyShop</span>
+                    </div>
+                  }
+                </div>
+
+                <div class="product-info">
+                  <span class="product-platform">{{ item.game.platform }}</span>
+
+                  <h2>{{ item.game.title }}</h2>
+
+                  <p class="unit-price">
+                    {{ item.game.price | currency:'USD':'symbol':'1.2-2' }}
+                    por unidad
+                  </p>
+
+                  <div class="quantity-row">
+                    <div class="quantity-controls">
+                      <ion-button
+                        fill="clear"
+                        size="small"
+                        aria-label="Disminuir cantidad"
+                        (click)="disminuir(item.game.id)">
+                        <ion-icon name="remove-outline"></ion-icon>
+                      </ion-button>
+
+                      <span class="quantity" aria-live="polite">{{ item.quantity }}</span>
+
+                      <ion-button
+                        fill="clear"
+                        size="small"
+                        aria-label="Aumentar cantidad"
+                        [disabled]="item.quantity >= item.game.stock"
+                        (click)="aumentar(item.game.id)">
+                        <ion-icon name="add-outline"></ion-icon>
+                      </ion-button>
+                    </div>
+
+                    @if (item.quantity >= item.game.stock) {
+                      <span class="stock-limit">Máximo disponible</span>
+                    }
+                  </div>
+                </div>
+
+                <div class="product-actions">
+                  <strong class="subtotal">
+                    {{ subtotal(item) | currency:'USD':'symbol':'1.2-2' }}
+                  </strong>
+
+                  <ion-button
+                    fill="clear"
+                    class="remove-button"
+                    aria-label="Eliminar videojuego"
+                    (click)="eliminar(item.game.id)">
+                    <ion-icon name="trash-outline"></ion-icon>
+                  </ion-button>
+                </div>
+
+              </div>
+            </article>
+          }
+        </section>
+
+        <!-- ============ RESUMEN ============ -->
+        <aside class="order-summary">
+          <h2>Resumen de compra</h2>
+
+          <div class="summary-line">
+            <span>Productos</span>
+            <span>{{ totalItems }}</span>
+          </div>
+
+          <div class="summary-line">
+            <span>Subtotal</span>
+            <span>{{ totalPrice | currency:'USD':'symbol':'1.2-2' }}</span>
+          </div>
+
+          <div class="summary-line total-line">
+            <span>Total</span>
+            <strong>{{ totalPrice | currency:'USD':'symbol':'1.2-2' }}</strong>
+          </div>
+
+          <p class="summary-note">
+            El total es provisional. Los precios y las existencias se verifican
+            en el servidor al finalizar la compra.
+          </p>
+
+          <ion-button
+            expand="block"
+            class="primary-button"
+            routerLink="/checkout">
+            Finalizar compra
+          </ion-button>
+
+          <ion-button
+            expand="block"
+            fill="clear"
+            class="continue-button"
+            routerLink="/tabs/catalogo">
+            Seguir comprando
+          </ion-button>
+        </aside>
+
+      </div>
+    }
+
+  </main>
+
+</ion-content>

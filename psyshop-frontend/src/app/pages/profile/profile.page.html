@@ -1,0 +1,183 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="top-bar">
+    <ion-title>
+      <span class="brand">Psy<span class="brand-accent">Shop</span></span>
+      <span class="title-section">Mi cuenta</span>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="profile-content">
+  <div class="profile-container">
+
+    <div class="glow" aria-hidden="true"></div>
+
+    <!-- ============ ENCABEZADO ============ -->
+    <div class="brand-section">
+      <div class="brand-icon">
+        <ion-icon name="person-circle-outline"></ion-icon>
+      </div>
+      <h1>Tu cuenta, tu colección.</h1>
+      <p class="subtitle">
+        Gestiona tu perfil y mantén tus compras de videojuegos organizadas.
+      </p>
+    </div>
+
+    <!-- ============ INICIAR SESIÓN / CREAR CUENTA ============ -->
+    <ion-card class="account-card" *ngIf="!user">
+      <ion-card-content>
+        <ion-segment
+          [value]="mode"
+          (ionChange)="changeMode($event.detail.value)"
+          class="auth-segment"
+        >
+          <ion-segment-button value="login">
+            <ion-label>Iniciar sesión</ion-label>
+          </ion-segment-button>
+
+          <ion-segment-button value="register">
+            <ion-label>Crear cuenta</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+
+        <div class="form-heading">
+          <h2>{{ mode === 'login' ? 'Bienvenido de nuevo' : 'Únete a PsyShop' }}</h2>
+          <p>
+            {{
+              mode === 'login'
+                ? 'Ingresa para consultar tus compras.'
+                : 'Crea tu cuenta para gestionar tus pedidos.'
+            }}
+          </p>
+        </div>
+
+        <form (ngSubmit)="submit()">
+          <div class="field-group" *ngIf="mode === 'register'">
+            <ion-label class="field-label">Nombre completo</ion-label>
+            <ion-input
+              name="name"
+              [(ngModel)]="name"
+              placeholder="Tu nombre"
+              autocomplete="name"
+              required
+              class="custom-input"
+            ></ion-input>
+          </div>
+
+          <div class="field-group">
+            <ion-label class="field-label">Correo electrónico</ion-label>
+            <ion-input
+              name="email"
+              [(ngModel)]="email"
+              type="email"
+              placeholder="correo@ejemplo.com"
+              autocomplete="email"
+              required
+              class="custom-input"
+            ></ion-input>
+          </div>
+
+          <div class="field-group">
+            <ion-label class="field-label">Contraseña</ion-label>
+            <ion-input
+              name="password"
+              [(ngModel)]="password"
+              type="password"
+              placeholder="Mínimo 8 caracteres"
+              autocomplete="current-password"
+              required
+              class="custom-input"
+            ></ion-input>
+          </div>
+
+          <div class="field-group" *ngIf="mode === 'register'">
+            <ion-label class="field-label">Confirmar contraseña</ion-label>
+            <ion-input
+              name="passwordConfirmation"
+              [(ngModel)]="passwordConfirmation"
+              type="password"
+              placeholder="Repite tu contraseña"
+              autocomplete="new-password"
+              required
+              class="custom-input"
+            ></ion-input>
+          </div>
+
+          <ion-text color="danger" *ngIf="errorMessage">
+            <p class="feedback error-feedback" role="alert">{{ errorMessage }}</p>
+          </ion-text>
+
+          <ion-text color="success" *ngIf="successMessage">
+            <p class="feedback success-feedback" role="status">{{ successMessage }}</p>
+          </ion-text>
+
+          <ion-button
+            type="submit"
+            expand="block"
+            [disabled]="loading"
+            class="submit-button"
+          >
+            <ion-spinner
+              *ngIf="loading"
+              name="crescent"
+            ></ion-spinner>
+
+            <ion-icon
+              *ngIf="!loading"
+              slot="start"
+              [name]="mode === 'login' ? 'log-in-outline' : 'person-add-outline'"
+            ></ion-icon>
+
+            {{ loading ? 'Procesando...' : (mode === 'login' ? 'Iniciar sesión' : 'Crear mi cuenta') }}
+          </ion-button>
+        </form>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- ============ TARJETA DE JUGADOR (sesión activa) ============ -->
+    <ion-card class="account-card logged-card" *ngIf="user">
+      <ion-card-content>
+        <span class="session-pill">Sesión activa</span>
+
+        <div class="user-avatar">
+          <ion-icon name="person-circle-outline"></ion-icon>
+        </div>
+
+        <h2>{{ user.name }}</h2>
+        <p class="user-email">{{ user.email }}</p>
+
+        <div class="account-status">
+          <ion-icon name="shield-checkmark-outline"></ion-icon>
+          <span>Cliente PsyShop</span>
+        </div>
+
+        <ion-text color="success" *ngIf="successMessage">
+          <p class="feedback success-feedback" role="status">{{ successMessage }}</p>
+        </ion-text>
+
+        <ion-text color="danger" *ngIf="errorMessage">
+          <p class="feedback error-feedback" role="alert">{{ errorMessage }}</p>
+        </ion-text>
+
+        <ion-button
+          expand="block"
+          fill="outline"
+          color="danger"
+          class="logout-button"
+          [disabled]="loading"
+          (click)="logout()"
+        >
+          <ion-icon slot="start" name="log-out-outline"></ion-icon>
+          {{ loading ? 'Cerrando sesión...' : 'Cerrar sesión' }}
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+
+    <div class="security-note">
+      <ion-icon name="shield-checkmark-outline"></ion-icon>
+      <p>Tus credenciales se validan mediante el servidor de PsyShop.</p>
+    </div>
+
+  </div>
+
+</ion-content>

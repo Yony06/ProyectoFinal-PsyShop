@@ -1,0 +1,265 @@
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap');
+
+// ============================================================
+// PsyShop · Finalizar compra (reemplaza todo tu archivo .scss)
+// ============================================================
+
+:host {
+  --void: #05060f;
+  --deck: #0c1024;
+  --deck-2: #121838;
+  --edge: rgba(130, 160, 255, 0.2);
+  --text: #e8ecff;
+  --dim: #8c95b8;
+  --cyan: #19e3ff;
+  --violet: #7a5cff;
+  --hot: #ff3d8b;
+  --ok: #3ddc97;
+
+  --font-display: 'Chakra Petch', 'Segoe UI', sans-serif;
+  --font-body: 'Barlow', 'Segoe UI', sans-serif;
+  --cut: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+  --cut-sm: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+}
+
+// ---------- Barra superior ----------
+.top-bar {
+  --background: rgba(5, 6, 15, 0.92);
+  --color: var(--text);
+  --border-width: 0;
+  border-bottom: 1px solid var(--edge);
+}
+
+.brand {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: var(--text);
+}
+.brand-accent { color: var(--cyan); }
+
+.title-section {
+  margin-left: 12px;
+  padding-left: 12px;
+  border-left: 1px solid var(--edge);
+  color: var(--dim);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+// ---------- Base ----------
+.checkout-content {
+  --background: var(--void);
+  --color: var(--text);
+  // Los campos de Ionic toman el color de texto del tema; aquí lo adaptamos al fondo oscuro
+  --ion-text-color: #e8ecff;
+  --ion-text-color-rgb: 232, 236, 255;
+  font-family: var(--font-body);
+
+  h1, h2, h3 { font-family: var(--font-display); margin: 0; color: var(--text); }
+  p { margin: 0; }
+}
+
+.checkout-container {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 28px 20px 8px;
+}
+
+// ============================================================
+// ENCABEZADO + PASOS
+// ============================================================
+.checkout-heading {
+  margin-bottom: 28px;
+
+  h1 {
+    font-size: clamp(2rem, 7vw, 3rem);
+    line-height: 1.05;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  p { margin-top: 6px; color: var(--dim); }
+}
+
+.steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  list-style: none;
+  margin: 22px 0 0;
+  padding: 0;
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--dim);
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  .step-dot {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border: 1.5px solid var(--dim);
+    border-radius: 50%;
+    font-size: 0.8rem;
+  }
+
+  .done { color: var(--ok); .step-dot { border-color: var(--ok); background: rgba(61, 220, 151, 0.12); } }
+
+  .current {
+    color: var(--cyan);
+    .step-dot {
+      border-color: var(--cyan);
+      background: var(--cyan);
+      color: #031018;
+      box-shadow: 0 0 14px rgba(25, 227, 255, 0.45);
+    }
+  }
+}
+
+// ============================================================
+// TARJETAS
+// ============================================================
+.checkout-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.checkout-card {
+  padding: 24px 22px;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(122, 92, 255, 0.18), transparent 55%),
+    var(--deck);
+  border: 1px solid var(--edge);
+  clip-path: var(--cut);
+
+  h2 { margin-bottom: 18px; font-size: 1.35rem; }
+}
+
+// ---------- Campos ----------
+ion-input,
+ion-textarea {
+  --background: var(--void);
+  --color: var(--text);
+  --placeholder-color: var(--dim);
+  --padding-start: 14px;
+  --padding-end: 14px;
+  --highlight-color-focused: var(--cyan);
+  --highlight-color-valid: var(--cyan);
+  margin-bottom: 18px;
+  min-height: 62px;
+  box-shadow: inset 0 0 0 1px var(--edge);
+  clip-path: var(--cut-sm);
+  transition: box-shadow 0.2s;
+
+  &.has-focus { box-shadow: inset 0 0 0 1px var(--cyan); }
+  &.ion-touched.ion-invalid { box-shadow: inset 0 0 0 1px var(--hot); }
+}
+
+ion-textarea { min-height: 120px; }
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  column-gap: 16px;
+}
+
+// ---------- Mensaje de error ----------
+.error-message {
+  margin: 0 0 16px !important;
+  padding: 10px 14px;
+  border-left: 3px solid var(--hot);
+  background: rgba(255, 61, 139, 0.1);
+  color: #ffd0e2;
+  font-size: 0.92rem;
+  line-height: 1.4;
+}
+
+// ---------- Botón ----------
+.checkout-button {
+  margin: 6px 0 0;
+  --background: linear-gradient(120deg, var(--cyan), var(--violet));
+  --background-activated: var(--violet);
+  --color: #031018;
+  --border-radius: 0;
+  --box-shadow: none;
+  --padding-top: 16px;
+  --padding-bottom: 16px;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  clip-path: var(--cut);
+
+  ion-spinner { margin-right: 8px; }
+}
+
+// ============================================================
+// RESUMEN
+// ============================================================
+.summary-product {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--edge);
+
+  strong { font-family: var(--font-display); font-size: 1.02rem; }
+  p { margin-top: 2px; color: var(--dim); font-size: 0.9rem; }
+}
+
+.line-total { color: var(--text); white-space: nowrap; }
+
+.summary-total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 18px 0 14px;
+  font-family: var(--font-display);
+
+  span { color: var(--dim); }
+  strong { font-size: 2rem; color: var(--cyan); }
+}
+
+.summary-note {
+  padding: 12px 14px;
+  border: 1px dashed var(--edge);
+  color: var(--dim);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+// ---------- Carrito vacío ----------
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 48px 20px;
+  text-align: center;
+
+  h2 { margin-bottom: 0; font-size: 1.6rem; }
+  p { max-width: 34ch; margin-bottom: 14px; color: var(--dim); }
+}
+
+// ---------- Pantallas anchas ----------
+@media (min-width: 900px) {
+  .checkout-container { padding: 48px 32px 16px; }
+  .checkout-layout { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 28px; }
+  .checkout-card { padding: 30px 28px; }
+
+  // El resumen te acompaña mientras llenas el formulario
+  .order-summary { position: sticky; top: 24px; }
+}
+
+@media (min-width: 560px) {
+  .field-row { grid-template-columns: 1fr 1fr; }
+}

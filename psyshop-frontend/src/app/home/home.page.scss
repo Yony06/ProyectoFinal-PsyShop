@@ -1,0 +1,662 @@
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap');
+
+// ============================================================
+// PsyShop · Interfaz tipo consola (reemplaza todo tu home.page.scss)
+// ============================================================
+
+:host {
+  --void: #05060f;
+  --deck: #0c1024;
+  --deck-2: #121838;
+  --edge: rgba(130, 160, 255, 0.2);
+  --text: #e8ecff;
+  --dim: #8c95b8;
+  --cyan: #19e3ff;
+  --violet: #7a5cff;
+  --hot: #ff3d8b;
+
+  --sym-triangle: #3ddc97;
+  --sym-circle: #ff5d6c;
+  --sym-cross: #4da3ff;
+  --sym-square: #ff8fd1;
+
+  --font-display: 'Chakra Petch', 'Segoe UI', sans-serif;
+  --font-body: 'Barlow', 'Segoe UI', sans-serif;
+
+  // Esquina cortada: la firma visual de toda la interfaz
+  --cut: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+}
+
+ion-content {
+  --background: var(--void);
+  --color: var(--text);
+}
+
+// ---------- Barra superior ----------
+.top-bar {
+  --background: rgba(5, 6, 15, 0.92);
+  --color: var(--text);
+  --border-width: 0;
+  border-bottom: 1px solid var(--edge);
+}
+
+.logo {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.35rem;
+  letter-spacing: 0.02em;
+  color: var(--text);
+}
+.logo-accent { color: var(--cyan); }
+
+.cart-button {
+  --color: var(--text);
+  font-family: var(--font-display);
+}
+.cart-count {
+  margin-left: 8px;
+  min-width: 22px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--hot);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+// ---------- Base ----------
+.store {
+  font-family: var(--font-body);
+  color: var(--text);
+  overflow-x: hidden;
+
+  h1, h2, h3, h4 { font-family: var(--font-display); margin: 0; }
+  p { margin: 0; }
+}
+
+.section-title {
+  margin-bottom: 16px !important;
+  font-size: 1.4rem;
+}
+
+// ---------- Botones ----------
+.btn-neon,
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 28px;
+  border: 0;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-decoration: none;
+  cursor: pointer;
+  clip-path: var(--cut);
+  transition: filter 0.2s, background 0.2s;
+
+  &:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+}
+
+.btn-neon {
+  background: linear-gradient(120deg, var(--cyan), var(--violet));
+  color: #031018;
+  &:hover { filter: brightness(1.15); }
+}
+
+.btn-ghost {
+  background: rgba(130, 160, 255, 0.12);
+  color: var(--text);
+  &:hover { background: rgba(130, 160, 255, 0.24); }
+}
+
+.btn-small { padding: 9px 18px; font-size: 0.9rem; }
+
+// ============================================================
+// HERO: aquí va el momento memorable (suelo de rejilla en perspectiva)
+// ============================================================
+.hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+  align-items: center;
+  gap: 40px;
+  min-height: 560px;
+  padding: 72px 32px 88px;
+  max-width: 1240px;
+  margin: 0 auto;
+  isolation: isolate;
+}
+
+// ---------- Banner de fondo (a todo el ancho de la pantalla) ----------
+.hero-banner,
+.hero-shade {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 100vw;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.hero-banner {
+  z-index: -4;
+  height: 80%;
+  object-fit:fill;
+  object-position: center;
+}
+
+// Capa oscura: mantiene legible el texto y funde el banner con la página
+.hero-shade {
+  z-index: -3;
+  background:
+    linear-gradient(180deg, rgba(5, 6, 15, 0.3) 0%, rgba(5, 6, 15, 0.55) 65%, var(--void) 100%),
+    linear-gradient(90deg, rgba(5, 6, 15, 0.55), transparent 70%);
+}
+
+.hero-grid-floor {
+  position: absolute;
+  left: -20%;
+  right: -20%;
+  bottom: 0;
+  height: 60%;
+  z-index: -1;
+  background-image:
+    linear-gradient(var(--edge) 1px, transparent 1px),
+    linear-gradient(90deg, var(--edge) 1px, transparent 1px);
+  background-size: 56px 56px;
+  transform: perspective(500px) rotateX(62deg);
+  transform-origin: bottom;
+  mask-image: linear-gradient(to top, #000 10%, transparent 90%);
+  -webkit-mask-image: linear-gradient(to top, #000 10%, transparent 90%);
+  animation: floor-move 6s linear infinite;
+}
+
+@keyframes floor-move {
+  to { background-position: 0 56px, 0 0; }
+}
+
+.hero-glow {
+  position: absolute;
+  top: -10%;
+  right: 0;
+  width: 560px;
+  height: 560px;
+  z-index: -2;
+  background: radial-gradient(circle, rgba(122, 92, 255, 0.45), transparent 65%);
+  filter: blur(20px);
+}
+
+.hero h1 {
+  font-size: clamp(2.4rem, 6vw, 4.6rem);
+  line-height: 1.02;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+}
+
+.hero-line-2 {
+  display: block;
+  background: linear-gradient(90deg, var(--cyan), var(--violet) 60%, var(--hot));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-lead {
+  max-width: 46ch;
+  margin-top: 20px !important;
+  color: var(--dim);
+  font-size: 1.1rem;
+  line-height: 1.55;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+.hero-stats {
+  display: flex;
+  gap: 32px;
+  margin: 40px 0 0;
+
+  div { display: flex; flex-direction: column-reverse; }
+  dt { color: var(--dim); font-size: 0.85rem; }
+  dd {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+}
+
+// Juego destacado
+.hero-showcase { display: flex; justify-content: center; }
+
+.featured {
+  position: relative;
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 18px;
+  width: 100%;
+  max-width: 420px;
+  padding: 16px;
+  background: rgba(12, 16, 36, 0.85);
+  border: 1px solid var(--edge);
+  clip-path: var(--cut);
+  color: var(--text);
+  text-decoration: none;
+  transition: border-color 0.2s;
+
+  &:hover, &:focus-visible { border-color: var(--cyan); }
+}
+
+.featured-cover {
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  background: var(--deck-2);
+  ion-img { width: 100%; height: 100%; object-fit: contain; }
+}
+
+.featured-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  justify-content: flex-end;
+
+  strong { font-family: var(--font-display); font-size: 1.2rem; line-height: 1.2; }
+}
+
+.featured-tag {
+  align-self: flex-start;
+  margin-bottom: auto;
+  padding: 3px 10px;
+  background: var(--hot);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fff;
+}
+.featured-meta { color: var(--dim); font-size: 0.9rem; }
+.featured-price {
+  margin-top: 8px;
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--cyan);
+}
+
+.showcase-empty {
+  font-family: var(--font-display);
+  font-size: 3.5rem;
+  font-weight: 700;
+  span { color: var(--cyan); }
+}
+
+// ============================================================
+// ELIGE TU CONSOLA
+// ============================================================
+.consoles {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+.console-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 12px;
+}
+
+.console-tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 20px 20px 20px 74px;
+  border: 1px solid var(--edge);
+  background: var(--deck);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  clip-path: var(--cut);
+  transition: background 0.2s, border-color 0.2s;
+
+  // Símbolo de control: △ ○ ✕ □
+  &::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    border: 2px solid var(--dim);
+    border-radius: 50%;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--dim);
+  }
+  &[data-sym='0']::before { content: '△'; color: var(--sym-triangle); border-color: var(--sym-triangle); }
+  &[data-sym='1']::before { content: '○'; color: var(--sym-circle);   border-color: var(--sym-circle); }
+  &[data-sym='2']::before { content: '✕'; color: var(--sym-cross);    border-color: var(--sym-cross); }
+  &[data-sym='3']::before { content: '□'; color: var(--sym-square);   border-color: var(--sym-square); }
+
+  &:hover { background: var(--deck-2); }
+  &.active { background: var(--deck-2); border-color: var(--cyan); }
+  &:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+}
+
+.console-name { font-family: var(--font-display); font-size: 1.2rem; font-weight: 700; }
+.console-sub { color: var(--dim); font-size: 0.85rem; }
+
+// ---------- Aviso de carrito ----------
+.cart-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  max-width: 1176px;
+  margin: 28px 32px 0;
+  padding: 14px 20px;
+  background: linear-gradient(120deg, rgba(25, 227, 255, 0.16), rgba(122, 92, 255, 0.2));
+  border: 1px solid var(--edge);
+  clip-path: var(--cut);
+
+  @media (min-width: 1240px) { margin-left: auto; margin-right: auto; }
+}
+
+// ============================================================
+// CATÁLOGO
+// ============================================================
+.catalog {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 56px 32px 0;
+}
+
+.catalog-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+
+  h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); }
+}
+.catalog-sub { margin-top: 4px !important; color: var(--dim); }
+.catalog-count {
+  padding: 4px 12px;
+  border: 1px solid var(--edge);
+  color: var(--dim);
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.search {
+  flex: 1 1 280px;
+  padding: 0;
+  --background: var(--deck);
+  --color: var(--text);
+  --placeholder-color: var(--dim);
+  --icon-color: var(--cyan);
+  --border-radius: 0;
+  --box-shadow: inset 0 0 0 1px var(--edge);
+}
+
+.genre-chips {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 14px 0 20px;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+}
+
+.chip {
+  flex: 0 0 auto;
+  padding: 8px 18px;
+  border: 1px solid var(--edge);
+  background: transparent;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  cursor: pointer;
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+
+  &:hover { background: var(--deck-2); }
+  &.active {
+    background: var(--cyan);
+    border-color: var(--cyan);
+    color: #031018;
+    font-weight: 600;
+  }
+  &:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+}
+
+.state-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 48px 16px;
+  text-align: center;
+  color: var(--dim);
+  border: 1px dashed var(--edge);
+  margin-bottom: 24px;
+  h3 { color: var(--text); }
+}
+
+.error-message {
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  border-left: 3px solid var(--hot);
+  background: rgba(255, 61, 139, 0.1);
+  color: #ffd0e2;
+}
+
+// ---------- Tarjetas de juego ----------
+.game-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+// El "borde" es el fondo en degradé que asoma 1px alrededor del cuerpo
+.game-card {
+  padding: 1px;
+  background: linear-gradient(150deg, var(--edge), transparent 60%);
+  clip-path: var(--cut);
+  transition: transform 0.2s, background 0.2s;
+
+  &:hover {
+    transform: translateY(-4px);
+    background: linear-gradient(150deg, var(--cyan), var(--violet) 70%);
+  }
+}
+
+.game-card-body {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--deck);
+  clip-path: var(--cut);
+}
+
+.game-art {
+  position: relative;
+  aspect-ratio: 1 / 1.1;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 40%, var(--deck-2), var(--void) 90%);
+
+  // contain = se ve la portada completa, sin recortes
+  // (si prefieres que llene el marco, cambia a: cover)
+  ion-img { width: 100%; height: 100%; object-fit: contain; }
+}
+
+.platform-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 3px 10px;
+  background: rgba(5, 6, 15, 0.85);
+  border: 1px solid var(--cyan);
+  color: var(--cyan);
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.game-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 100%;
+  padding: 16px;
+  text-align: center;
+  background: radial-gradient(circle at 30% 20%, rgba(122, 92, 255, 0.4), var(--deck-2) 70%);
+
+  .placeholder-logo { color: var(--cyan); font-family: var(--font-display); font-weight: 700; }
+  .placeholder-platform { color: var(--dim); font-size: 0.85rem; }
+  .placeholder-title { font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; }
+}
+
+.game-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 8px;
+  padding: 16px;
+
+  h3 { font-size: 1.2rem; line-height: 1.2; }
+}
+
+.game-genre { color: var(--violet); font-size: 0.85rem; font-weight: 600; }
+
+.game-description {
+  color: var(--dim);
+  font-size: 0.92rem;
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.game-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+.game-price {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  color: var(--cyan);
+}
+
+.stock {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--sym-triangle);
+
+  &::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+  &.out { color: var(--hot); }
+}
+
+.game-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 8px;
+}
+
+.btn-cart {
+  margin: 0;
+  --background: linear-gradient(120deg, var(--cyan), var(--violet));
+  --color: #031018;
+  --border-radius: 0;
+  --box-shadow: none;
+  font-family: var(--font-display);
+  font-weight: 600;
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+}
+
+.btn-detail {
+  margin: 0;
+  --color: var(--text);
+  font-family: var(--font-display);
+}
+
+// ---------- Beneficios ----------
+.perks {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  max-width: 1176px;
+  margin: 64px 32px;
+  border-top: 1px solid var(--edge);
+  border-bottom: 1px solid var(--edge);
+
+  @media (min-width: 1240px) { margin-left: auto; margin-right: auto; }
+}
+
+.perk {
+  padding: 24px;
+  & + .perk { border-left: 1px solid var(--edge); }
+  strong { font-family: var(--font-display); font-size: 1.1rem; }
+  p { margin-top: 6px !important; color: var(--dim); font-size: 0.95rem; }
+}
+
+// ---------- Responsive ----------
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: 1fr;
+    padding: 48px 20px 64px;
+    min-height: 0;
+  }
+  .hero-showcase { justify-content: flex-start; }
+  .consoles, .catalog { padding-left: 20px; padding-right: 20px; }
+  .cart-strip, .perks { margin-left: 20px; margin-right: 20px; }
+  .perk + .perk { border-left: 0; border-top: 1px solid var(--edge); }
+}
+
+@media (max-width: 480px) {
+  .featured { grid-template-columns: 110px 1fr; }
+  .hero-stats { gap: 20px; }
+}
+
+// Respeta a quien prefiere menos movimiento
+@media (prefers-reduced-motion: reduce) {
+  .hero-grid-floor { animation: none; }
+  .game-card { transition: none; }
+}
