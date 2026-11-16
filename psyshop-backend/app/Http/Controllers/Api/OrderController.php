@@ -3,15 +3,16 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Mail\OrderPlaced;
+use App\Mail\OrderReady;
 use App\Models\Game;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
-use App\Mail\PedidoConfirmadoMail;
-use Illuminate\Support\Facades\Mail;
-
 
 class OrderController extends Controller
 {
@@ -24,7 +25,6 @@ class OrderController extends Controller
 
         return response()->json($orders);
     }
-
 
     // NUEVO: pedidos del cliente que inició sesión
     public function myOrders(Request $request)
@@ -127,6 +127,14 @@ class OrderController extends Controller
             return $order->load('items.game');
         });
 
+        // NUEVO: correo de confirmación. Si el correo falla (SMTP caído, mala
+        // configuración...), el pedido YA está guardado y no se pierde.
+        try {
+            Mail::to($order->customer_email)->send(new OrderPlaced($order));
+        } catch (\Throwable $e) {
+            Log::warning("No se pudo enviar el correo del pedido #{$order->id}: " . $e->getMessage());
+        }
+
         return response()->json([
             'message' => 'Pedido registrado correctamente.',
             'order' => $order,
@@ -143,21 +151,30 @@ class OrderController extends Controller
             ],
         ]);
 
+        $previousStatus = $order->status;
+
         $order->update([
             'status' => $validated['status'],
         ]);
 
-        // Enviar el correo solo si el estado es 'completed'
-        if ($validated['status'] === 'completed') {
-            // Importante: Asegúrate de que 'detalles' y 'game' sean los 
-            // nombres reales de las relaciones en tu modelo Order.
-            $order->load(['user', 'items.game']);
-            Mail::to($order->user->email)->send(new PedidoConfirmadoMail($order));
+        // NUEVO: aviso al cliente cuando el pedido PASA a "completed".
+        // Si ya estaba completado y se guarda otra vez, no se repite el correo.
+        $emailSent = false;
+
+        if ($validated['status'] === 'completed' && $previousStatus !== 'completed') {
+            try {
+                $order->load('items.game');
+                Mail::to($order->customer_email)->send(new OrderReady($order));
+                $emailSent = true;
+            } catch (\Throwable $e) {
+                Log::warning("No se pudo enviar el aviso de pedido listo #{$order->id}: " . $e->getMessage());
+            }
         }
 
         return response()->json([
             'message' => 'Estado del pedido actualizado correctamente.',
             'order' => $order->fresh(),
+            'email_sent' => $emailSent,
         ]);
     }
 }

@@ -2,6 +2,53 @@
 
   <!-- ============ HERO ============ -->
   <section class="welcome">
+
+    <!-- ============ SESIÓN: esquina superior derecha ============ -->
+    <div class="ubox" #userBox [class.open]="menuAbierto">
+      @if (user) {
+
+        <!-- Con sesión iniciada: botón tipo acordeón -->
+        <button type="button" class="ubox-toggle"
+                (click)="alternarMenu()"
+                [attr.aria-expanded]="menuAbierto"
+                aria-controls="ubox-panel">
+          <span class="ubox-avatar">{{ inicial }}</span>
+          <span class="ubox-name">{{ primerNombre }}</span>
+          <ion-icon class="ubox-chevron" name="chevron-down-outline"></ion-icon>
+        </button>
+
+        <div class="ubox-panel" id="ubox-panel" [attr.aria-hidden]="!menuAbierto">
+          <div class="ubox-panel-inner">
+            <p class="ubox-email">{{ user.email }}</p>
+
+            <button type="button" class="ubox-item" (click)="elegirOpcion('Carrito')">
+              <ion-icon name="cart-outline"></ion-icon>
+              Mi carrito
+            </button>
+
+            <button type="button" class="ubox-item" (click)="elegirOpcion('Pedidos')">
+              <ion-icon name="receipt-outline"></ion-icon>
+              Mis pedidos
+            </button>
+
+            <button type="button" class="ubox-item ubox-danger" (click)="pedirConfirmacion()">
+              <ion-icon name="log-out-outline"></ion-icon>
+              Cerrar sesión
+            </button>
+          </div>
+        </div>
+
+      } @else {
+
+        <!-- Sin sesión: botón que lleva a iniciar sesión -->
+        <button type="button" class="ubox-login" (click)="irAPestana('Perfil')">
+          <ion-icon name="log-in-outline"></ion-icon>
+          Iniciar sesión
+        </button>
+
+      }
+    </div>
+
     <!-- Video de fondo: sin sonido, en bucle y sin controles -->
     <video
       #heroVideo
@@ -128,5 +175,42 @@
     </ion-card>
   </section>
 
+
+  <!-- ============ CONFIRMAR CIERRE DE SESIÓN ============ -->
+  @if (confirmandoSalida) {
+    <div slot="fixed" class="confirm-overlay" (click)="cancelarSalida()">
+      <div class="confirm-dialog"
+           role="alertdialog"
+           aria-modal="true"
+           aria-labelledby="confirm-title"
+           aria-describedby="confirm-text"
+           (click)="$event.stopPropagation()">
+
+        <div class="confirm-icon" aria-hidden="true">
+          <ion-icon name="log-out-outline"></ion-icon>
+        </div>
+
+        <h2 id="confirm-title">¿Cerrar sesión?</h2>
+        <p id="confirm-text">
+          Saldrás de tu cuenta, {{ primerNombre }}.
+          Podrás volver a entrar cuando quieras.
+        </p>
+
+        <div class="confirm-actions">
+          <button type="button" #btnCancelar class="confirm-cancel"
+                  [disabled]="cerrandoSesion"
+                  (click)="cancelarSalida()">
+            Cancelar
+          </button>
+
+          <button type="button" class="confirm-ok"
+                  [disabled]="cerrandoSesion"
+                  (click)="confirmarSalida()">
+            {{ cerrandoSesion ? 'Cerrando...' : 'Sí, cerrar sesión' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
 
 </ion-content>

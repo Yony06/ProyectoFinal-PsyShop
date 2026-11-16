@@ -1,110 +1,106 @@
-
 <template>
   <div class="orders-page">
     <div class="page-header">
       <div>
-        <h1>Gestión de pedidos</h1>
-        <p>Consulta y administra los pedidos de PsyShop.</p>
+        <h1 class="glow-text">Gestión de pedidos</h1>
+        <p class="crumb">Consulta y administra los pedidos de PsyShop.</p>
       </div>
 
-      <button @click="cargarPedidos" :disabled="cargando">
+      <button class="btn-neon" @click="cargarPedidos" :disabled="cargando">
+        <span class="btn-icon">↻</span>
         {{ cargando ? 'Cargando...' : 'Actualizar pedidos' }}
       </button>
     </div>
 
-    <p v-if="error" class="error">{{ error }}</p>
-    <p v-if="mensaje" class="success">{{ mensaje }}</p>
-    <p v-if="cargando" class="info">Cargando pedidos...</p>
+    <p v-if="error" class="message error">{{ error }}</p>
+    <p v-if="mensaje" class="message success">{{ mensaje }}</p>
 
-    <div v-if="!cargando && !error" class="table-container">
-      <table>
-        <thead>
-          <tr>
-            <th>N.º</th>
-            <th>Cliente</th>
-            <th>Correo</th>
-            <th>Fecha</th>
-            <th>Total</th>
-            <th>Estado</th>
-            <th>Videojuegos</th>
-          </tr>
-        </thead>
+    <div class="admin-card">
+      <div class="card-body">
+        <p v-if="cargando" class="empty-state">Cargando pedidos...</p>
 
-        <tbody>
-          <tr v-for="pedido in pedidos" :key="pedido.id">
-            <td>#{{ pedido.id }}</td>
-            <td>{{ pedido.customer_name }}</td>
-            <td>{{ pedido.customer_email }}</td>
-            <td>{{ formatearFecha(pedido.created_at) }}</td>
-            <td>{{ formatearPrecio(pedido.total) }}</td>
+        <div v-if="!cargando && !error" class="table-container">
+          <table class="psy-table">
+            <thead>
+              <tr>
+                <th>N.º</th>
+                <th>Cliente</th>
+                <th>Correo</th>
+                <th>Fecha</th>
+                <th>Total</th>
+                <th>Estado</th>
+                <th>Videojuegos</th>
+              </tr>
+            </thead>
 
-            <td>
-              <span
-                class="status"
-                :class="claseEstado(pedido.status)"
-              >
-                {{ traducirEstado(pedido.status) }}
-              </span>
+            <tbody>
+              <tr v-for="pedido in pedidos" :key="pedido.id">
+                <td class="order-id">#{{ pedido.id }}</td>
 
-              <select
-                :value="pedido.status"
-                :disabled="actualizandoId === pedido.id"
-                @change="actualizarEstado(pedido, $event.target.value)"
-                class="status-select"
-              >
-                <option value="pending">Pendiente</option>
-                <option value="completed">Completado</option>
-                <option value="cancelled">Cancelado</option>
-              </select>
+                <td>
+                  <strong class="customer-name">{{ pedido.customer_name }}</strong>
+                </td>
 
-              <small
-                v-if="actualizandoId === pedido.id"
-                class="info"
-              >
-                Guardando...
-              </small>
-            </td>
+                <td><span class="id-text">{{ pedido.customer_email }}</span></td>
 
-            <td>
-              <ul v-if="pedido.items && pedido.items.length">
-                <li
-                  v-for="item in pedido.items"
-                  :key="item.id"
-                >
-                  {{ item.game?.title || 'Videojuego no disponible' }}
-                  × {{ item.quantity }}
-                </li>
-              </ul>
+                <td>{{ formatearFecha(pedido.created_at) }}</td>
 
-              <span v-else>Sin artículos</span>
-            </td>
-          </tr>
+                <td class="price">{{ formatearPrecio(pedido.total) }}</td>
 
-          <tr v-if="pedidos.length === 0">
-            <td colspan="7" class="empty">
-              No hay pedidos registrados.
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+                <td>
+                  <div class="status-wrapper">
+                    <span class="status-badge" :class="claseEstado(pedido.status)">
+                      <span class="status-dot"></span>
+                      {{ traducirEstado(pedido.status) }}
+                    </span>
 
-    <div v-if="!cargando && !error" class="pagination">
-      <button
-        @click="cambiarPagina(paginaActual - 1)"
-        :disabled="paginaActual <= 1"
-      >
-        Anterior
-      </button>
+                    <select :value="pedido.status" :disabled="actualizandoId === pedido.id"
+                      @change="actualizarEstado(pedido, $event.target.value)" class="psy-input status-select">
+                      <option value="pending">Pendiente</option>
+                      <option value="completed">Completado</option>
+                      <option value="cancelled">Cancelado</option>
+                    </select>
 
-      <span>Página {{ paginaActual }} de {{ ultimaPagina }}</span>
+                    <small v-if="actualizandoId === pedido.id" class="info-text text-cyan">
+                      Guardando...
+                    </small>
+                  </div>
+                </td>
 
-      <button
-        @click="cambiarPagina(paginaActual + 1)"
-        :disabled="paginaActual >= ultimaPagina"
-      >
-        Siguiente
-      </button>
+                <td>
+                  <ul class="items-list" v-if="pedido.items && pedido.items.length">
+                    <li v-for="item in pedido.items" :key="item.id">
+                      <span class="item-title">{{ item.game?.title || 'Videojuego no disponible' }}</span>
+                      <span class="item-qty">× {{ item.quantity }}</span>
+                    </li>
+                  </ul>
+                  <span v-else class="crumb">Sin artículos</span>
+                </td>
+              </tr>
+
+              <tr v-if="pedidos.length === 0">
+                <td colspan="7" class="empty-state">
+                  No hay pedidos registrados en el sistema.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div v-if="!cargando && !error && pedidos.length > 0" class="pagination">
+          <button class="btn-ghost" @click="cambiarPagina(paginaActual - 1)" :disabled="paginaActual <= 1">
+            Anterior
+          </button>
+
+          <span class="page-info">
+            Página <strong class="text-cyan">{{ paginaActual }}</strong> de {{ ultimaPagina }}
+          </span>
+
+          <button class="btn-ghost" @click="cambiarPagina(paginaActual + 1)" :disabled="paginaActual >= ultimaPagina">
+            Siguiente
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -228,171 +224,351 @@ export default {
 </script>
 
 <style scoped>
+/* Las variables globales (--void, --deck, --cyan, etc.) se heredan de App.vue */
+
 .orders-page {
-  padding: 28px;
-  color: #e5e7eb;
+  animation: fade-in 0.3s ease;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .page-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-end;
   gap: 16px;
-  margin-bottom: 24px;
+  margin-bottom: 30px;
 }
 
-h1 {
+.glow-text {
   margin: 0 0 8px;
-  color: #ffffff;
-  font-size: 28px;
+  font-size: clamp(1.8rem, 4vw, 2.4rem);
+  text-shadow: 0 0 20px rgba(122, 92, 255, 0.3);
 }
 
-.page-header p {
+.crumb {
   margin: 0;
-  color: #9ca3af;
+  color: var(--dim);
+  font-size: 0.9rem;
 }
 
-button {
-  padding: 10px 16px;
-  border: none;
-  border-radius: 8px;
-  background: #2563eb;
-  color: white;
+/* Tarjeta Principal */
+.admin-card {
+  background: var(--deck);
+  border: 1px solid var(--edge);
+  clip-path: var(--cut);
+  margin-bottom: 30px;
+}
+
+.card-body {
+  padding: 24px;
+}
+
+/* Botones principales y secundarios */
+.btn-neon {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: linear-gradient(90deg, rgba(25, 227, 255, 0.1), rgba(122, 92, 255, 0.1));
+  border: 1px solid var(--cyan);
+  color: var(--cyan);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-transform: uppercase;
   cursor: pointer;
+  clip-path: var(--cut-sm);
+  transition: all 0.2s;
+  box-shadow: inset 0 0 15px rgba(25, 227, 255, 0.1);
 }
 
-button:hover:not(:disabled) {
-  background: #1d4ed8;
+.btn-neon:hover:not(:disabled) {
+  background: var(--cyan);
+  color: #031018;
+  box-shadow: 0 0 20px rgba(25, 227, 255, 0.4);
 }
 
-button:disabled {
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 18px;
+  background: rgba(130, 160, 255, 0.08);
+  border: 1px solid transparent;
+  color: var(--text);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  clip-path: var(--cut-sm);
+  transition: all 0.2s;
+}
+
+.btn-ghost:hover:not(:disabled) {
+  background: rgba(130, 160, 255, 0.15);
+  border-color: rgba(130, 160, 255, 0.3);
+}
+
+.btn-neon:disabled,
+.btn-ghost:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
+/* Tabla de Pedidos */
 .table-container {
   overflow-x: auto;
-  border: 1px solid #374151;
-  border-radius: 10px;
 }
 
-table {
+.psy-table {
   width: 100%;
   border-collapse: collapse;
-  background: #111827;
+  text-align: left;
 }
 
-th,
-td {
-  padding: 14px;
-  text-align: left;
-  border-bottom: 1px solid #374151;
+.psy-table th {
+  padding: 0 12px 16px;
+  color: var(--dim);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--edge);
+}
+
+.psy-table td {
+  padding: 20px 12px;
+  border-bottom: 1px solid rgba(130, 160, 255, 0.08);
   vertical-align: top;
 }
 
-th {
-  background: #1f2937;
-  color: #d1d5db;
-  white-space: nowrap;
+.psy-table tbody tr {
+  transition: background 0.2s;
 }
 
-td {
-  color: #e5e7eb;
+.psy-table tbody tr:hover {
+  background: rgba(130, 160, 255, 0.03);
 }
 
-td ul {
-  margin: 0;
-  padding-left: 18px;
+.order-id {
+  font-family: var(--font-display);
+  color: var(--violet);
+  font-weight: 700;
 }
 
-.status {
-  display: inline-block;
-  padding: 5px 9px;
-  border-radius: 20px;
-  background: #374151;
-  font-size: 12px;
+.customer-name {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  color: var(--text);
 }
 
+.id-text {
+  color: var(--dim);
+  font-size: 0.9rem;
+}
+
+.price {
+  color: var(--cyan);
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+
+/* Estado del pedido */
+.status-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 700;
+  border: 1px solid transparent;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+/* Colores de estado */
 .status-pending {
-  background: #713f12;
-  color: #fde68a;
+  background: rgba(255, 176, 46, 0.15);
+  border-color: rgba(255, 176, 46, 0.3);
+  color: var(--warn);
+}
+
+.status-pending .status-dot {
+  background: var(--warn);
+  box-shadow: 0 0 6px var(--warn);
 }
 
 .status-completed {
-  background: #14532d;
-  color: #bbf7d0;
+  background: rgba(61, 220, 151, 0.15);
+  border-color: rgba(61, 220, 151, 0.3);
+  color: var(--ok);
+}
+
+.status-completed .status-dot {
+  background: var(--ok);
+  box-shadow: 0 0 6px var(--ok);
 }
 
 .status-cancelled {
-  background: #7f1d1d;
-  color: #fecaca;
+  background: rgba(255, 61, 139, 0.15);
+  border-color: rgba(255, 61, 139, 0.3);
+  color: var(--hot);
 }
 
-.status-select {
-  display: block;
+.status-cancelled .status-dot {
+  background: var(--hot);
+  box-shadow: 0 0 6px var(--hot);
+}
+
+/* Selector de estado */
+.psy-input.status-select {
   width: 100%;
   min-width: 130px;
-  margin-top: 8px;
-  padding: 9px 10px;
-  border: 1px solid #4b5563;
-  border-radius: 7px;
-  background: #1f2937;
-  color: #f9fafb;
-  font-size: 13px;
-  cursor: pointer;
+  padding: 8px 10px;
+  background: rgba(5, 6, 15, 0.5);
+  border: 1px solid rgba(130, 160, 255, 0.15);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  clip-path: var(--cut-sm);
+  transition: all 0.2s;
   outline: none;
-  transition: border-color 0.2s ease;
+  cursor: pointer;
 }
 
-.status-select:hover {
-  border-color: #3b82f6;
+.psy-input.status-select:focus {
+  background: var(--void);
+  border-color: var(--cyan);
 }
 
-.status-select:focus {
-  border-color: #60a5fa;
-  box-shadow: 0 0 0 2px rgb(59 130 246 / 20%);
+.psy-input.status-select option {
+  background: var(--void);
+  color: var(--text);
 }
 
-.status-select option {
-  background: #111827;
-  color: #f9fafb;
+.psy-input.status-select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
-.error {
-  padding: 12px;
-  border-radius: 8px;
-  background: #7f1d1d;
-  color: #fecaca;
+.info-text {
+  font-size: 0.8rem;
+  font-weight: bold;
 }
 
-.success {
-  padding: 12px;
-  border-radius: 8px;
-  background: #14532d;
-  color: #bbf7d0;
+.text-cyan {
+  color: var(--cyan);
 }
 
-.info,
-.empty {
-  color: #9ca3af;
+/* Lista de artículos */
+.items-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
+.items-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 8px;
+  background: rgba(130, 160, 255, 0.04);
+  border-radius: 4px;
+  border-left: 2px solid rgba(130, 160, 255, 0.2);
+}
+
+.item-title {
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.item-qty {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--violet);
+  font-size: 0.85rem;
+}
+
+/* Paginación */
 .pagination {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 18px;
-  margin-top: 20px;
+  gap: 20px;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid var(--edge);
 }
 
-@media (max-width: 768px) {
-  .orders-page {
-    padding: 16px;
-  }
+.page-info {
+  color: var(--dim);
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+}
 
+/* Mensajes */
+.message {
+  padding: 14px 18px;
+  margin-bottom: 24px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  clip-path: var(--cut-sm);
+  border-left: 3px solid transparent;
+}
+
+.message.error {
+  background: rgba(255, 61, 139, 0.1);
+  border-left-color: var(--hot);
+  color: #ff8fb8;
+}
+
+.message.success {
+  background: rgba(61, 220, 151, 0.1);
+  border-left-color: var(--ok);
+  color: #8ee6bb;
+}
+
+.empty-state {
+  padding: 40px 0;
+  text-align: center;
+  color: var(--dim);
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
   .page-header {
-    align-items: flex-start;
     flex-direction: column;
+    align-items: flex-start;
   }
 }
 </style>

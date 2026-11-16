@@ -352,3 +352,279 @@
   .floor { animation: none; }
  
 }
+// ============================================================
+// PEGA ESTO AL FINAL de tu dashboard.page.scss (no reemplaza nada)
+// Botón de sesión flotante en la esquina superior derecha del hero.
+// Si pegaste antes el bloque "user-menu.scss" anterior, puedes borrarlo:
+// este usa otros nombres de clase y no choca con él.
+// ============================================================
+
+.ubox {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+// ---------- Botones de la esquina ----------
+.ubox-toggle,
+.ubox-login {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(130, 160, 255, 0.3);
+  background: rgba(12, 16, 36, 0.85);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: #e8ecff;
+  font-family: 'Chakra Petch', 'Segoe UI', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  transition: border-color 0.2s;
+
+  &:hover { border-color: #19e3ff; }
+  &:focus-visible { outline: 2px solid #19e3ff; outline-offset: 2px; }
+}
+
+.ubox-toggle {
+  padding: 4px 12px 4px 4px;
+}
+
+.ubox-login {
+  padding: 9px 14px;
+  font-size: 0.9rem;
+
+  ion-icon { font-size: 18px; color: #19e3ff; }
+}
+
+.ubox-avatar {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #19e3ff, #7a5cff);
+  color: #031018;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.ubox-name {
+  max-width: 90px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.92rem;
+}
+
+.ubox-chevron {
+  font-size: 15px;
+  color: #8c95b8;
+  transition: transform 0.25s ease;
+}
+
+.ubox.open .ubox-chevron { transform: rotate(180deg); }
+
+// ---------- Acordeón desplegable ----------
+.ubox-panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  width: 230px;
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    grid-template-rows 0.25s ease,
+    opacity 0.2s ease,
+    visibility 0s linear 0.25s;
+}
+
+.ubox.open .ubox-panel {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  visibility: visible;
+  transition:
+    grid-template-rows 0.25s ease,
+    opacity 0.2s ease,
+    visibility 0s;
+}
+
+.ubox-panel-inner {
+  min-height: 0;
+  overflow: hidden;
+  background: #0c1024;
+  border: 1px solid rgba(130, 160, 255, 0.3);
+  box-shadow: 0 0 24px rgba(25, 227, 255, 0.15);
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+}
+
+.ubox-email {
+  margin: 0;
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(130, 160, 255, 0.2);
+  color: #8c95b8;
+  font-size: 0.82rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ubox-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 13px 14px;
+  border: 0;
+  background: transparent;
+  color: #e8ecff;
+  font-family: 'Chakra Petch', 'Segoe UI', sans-serif;
+  font-size: 0.98rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+
+  ion-icon { flex: 0 0 auto; font-size: 20px; color: #19e3ff; }
+
+  &:hover,
+  &:focus-visible {
+    background: rgba(25, 227, 255, 0.1);
+    outline: none;
+  }
+}
+
+.ubox-danger {
+  border-top: 1px solid rgba(130, 160, 255, 0.2);
+
+  ion-icon { color: #ff3d8b; }
+  &:hover, &:focus-visible { background: rgba(255, 61, 139, 0.12); }
+}
+
+// Pantallas muy angostas: solo el avatar, sin el nombre
+@media (max-width: 340px) {
+  .ubox-name { display: none; }
+}
+
+// Respeta a quien prefiere menos movimiento
+@media (prefers-reduced-motion: reduce) {
+  .ubox-panel,
+  .ubox.open .ubox-panel,
+  .ubox-chevron { transition: none; }
+}// ============================================================
+// PEGA ESTO AL FINAL de tu dashboard.page.scss (junto al bloque del
+// menú de usuario; no reemplaza nada)
+// Diálogo "¿Cerrar sesión?"
+// ============================================================
+
+.confirm-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(5, 6, 15, 0.75);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: confirm-fade 0.2s ease;
+}
+
+.confirm-dialog {
+  width: min(340px, 100%);
+  padding: 28px 22px 22px;
+  text-align: center;
+  color: #e8ecff;
+  font-family: 'Barlow', 'Segoe UI', sans-serif;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 61, 139, 0.2), transparent 60%),
+    #0c1024;
+  border: 1px solid rgba(255, 61, 139, 0.45);
+  box-shadow: 0 0 34px rgba(255, 61, 139, 0.18);
+  clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+  animation: confirm-pop 0.22s ease;
+
+  h2 {
+    margin: 14px 0 0;
+    font-family: 'Chakra Petch', 'Segoe UI', sans-serif;
+    font-size: 1.5rem;
+    line-height: 1.15;
+  }
+
+  p {
+    margin: 8px 0 0;
+    color: #aab3d6;
+    font-size: 0.98rem;
+    line-height: 1.5;
+  }
+}
+
+.confirm-icon {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto;
+  border: 2px solid #ff3d8b;
+  border-radius: 50%;
+  box-shadow: 0 0 22px rgba(255, 61, 139, 0.3);
+
+  ion-icon { font-size: 30px; color: #ff3d8b; }
+}
+
+.confirm-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.confirm-cancel,
+.confirm-ok {
+  padding: 13px 10px;
+  border: 0;
+  font-family: 'Chakra Petch', 'Segoe UI', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  transition: filter 0.2s, background 0.2s;
+
+  &:disabled { opacity: 0.6; cursor: default; }
+  &:focus-visible { outline: 2px solid #19e3ff; outline-offset: 2px; }
+}
+
+.confirm-cancel {
+  background: rgba(130, 160, 255, 0.14);
+  color: #e8ecff;
+
+  &:hover:not(:disabled) { background: rgba(130, 160, 255, 0.26); }
+}
+
+.confirm-ok {
+  background: #ff3d8b;
+  color: #1a0410;
+
+  &:hover:not(:disabled) { filter: brightness(1.12); }
+}
+
+@keyframes confirm-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes confirm-pop {
+  from { opacity: 0; transform: translateY(10px) scale(0.97); }
+  to   { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .confirm-overlay,
+  .confirm-dialog { animation: none; }
+}

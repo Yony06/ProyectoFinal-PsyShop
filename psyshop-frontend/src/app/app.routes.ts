@@ -33,7 +33,12 @@ export const routes: Routes = [
     redirectTo: 'tabs/inicio',
     pathMatch: 'full',
   },
+  
   {
+  path: 'cart',
+  loadComponent: () => import('./pages/cart/cart.page').then( m => m.CartPage)
+},
+{
     path: '**',
     redirectTo: 'tabs/inicio',
   },

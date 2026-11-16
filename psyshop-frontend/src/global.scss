@@ -41,6 +41,12 @@
 // porque el toast se dibuja fuera del componente).
 // ============================================================
 
+// ============================================================
+// PsyShop · Avisos (toast)
+// REEMPLAZA en src/global.scss todo el bloque de toast que pegaste antes
+// por este (no en el .scss de la página: el toast se dibuja fuera del componente).
+// ============================================================
+
 ion-toast.psy-toast {
   --background: #0c1024;
   --color: #e8ecff;
@@ -77,6 +83,7 @@ ion-toast.psy-toast {
   &::part(button) {
     min-height: 0;
     padding: 4px 8px;
+    color: #19e3ff;
     font-family: 'Chakra Petch', 'Segoe UI', sans-serif;
     font-size: 0.8rem;
     font-weight: 700;
@@ -91,11 +98,6 @@ ion-toast.psy-toast {
   }
 }
 
-// Cuando hay barra de pestañas abajo, el aviso se sube para no taparla
-ion-toast.psy-toast--above-tabs::part(container) {
-  margin-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
-}
-
 // Variante de error (sin stock, límite alcanzado, fallo de red)
 ion-toast.psy-toast--error {
   --border-color: #ff3d8b;
@@ -103,6 +105,7 @@ ion-toast.psy-toast--error {
   --button-color: #ff3d8b;
 
   &::part(header) { color: #ff3d8b; }
+  &::part(button) { color: #ff3d8b; }
   &::part(container) {
     background:
       linear-gradient(90deg, rgba(255, 61, 139, 0.16), transparent 40%),

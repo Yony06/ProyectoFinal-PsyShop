@@ -40,6 +40,13 @@ export interface OrderSummary {
   }[];
 }
 
+// Datos de la cuenta que inició sesión
+export interface UserInfo {
+  id: number;
+  name: string;
+  email: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -57,6 +64,13 @@ export class OrderService {
     });
   }
 
+  // Datos del cliente que inició sesión (para rellenar el checkout)
+  getMe(): Observable<UserInfo> {
+    return this.http.get<UserInfo>(`${this.baseUrl}/user`, {
+      headers: this.authHeaders()
+    });
+  }
+
   // Pedidos del cliente que inició sesión
   getMyOrders(): Observable<OrderSummary[]> {
     return this.http
@@ -64,6 +78,25 @@ export class OrderService {
         headers: this.authHeaders()
       })
       .pipe(map(res => res.orders ?? []));
+  }
+
+  // Cierra la sesión en el servidor (Laravel borra el token)
+  logout(): Observable<unknown> {
+    return this.http.post(`${this.baseUrl}/logout`, {}, {
+      headers: this.authHeaders()
+    });
+  }
+
+  // Borra del navegador lo que guarda la sesión (token y datos del usuario)
+  clearSession(): void {
+    for (const almacen of [localStorage, sessionStorage]) {
+      const claves: string[] = [];
+      for (let i = 0; i < almacen.length; i++) {
+        const clave = almacen.key(i);
+        if (clave && /token|user/i.test(clave)) claves.push(clave);
+      }
+      claves.forEach(clave => almacen.removeItem(clave));
+    }
   }
 
   // Envía el token de la sesión (Laravel Sanctum) para saber quién es el cliente.

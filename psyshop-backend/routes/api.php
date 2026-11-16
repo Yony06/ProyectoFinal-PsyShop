@@ -23,6 +23,12 @@ Route::post('/orders', [OrderController::class, 'store']);
 Route::middleware('auth:sanctum')
     ->get('/my-orders', [OrderController::class, 'myOrders']);
 
+// CAMBIO: datos del usuario con sesión iniciada (cualquier cliente, no solo admin).
+// Antes estaba dentro del grupo 'admin' y los clientes recibían 403.
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return $request->user();
+});
+
 // Operaciones administrativas protegidas
 Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     // Administración de videojuegos
@@ -34,9 +40,4 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     // Administración de pedidos
     Route::get('/admin/orders', [OrderController::class, 'index']);
     Route::patch('/admin/orders/{order}/status', [OrderController::class, 'updateStatus']);
-
-    // Usuario autenticado
-    Route::get('/user', function (Request $request) {
-        return $request->user();
-    });
 });

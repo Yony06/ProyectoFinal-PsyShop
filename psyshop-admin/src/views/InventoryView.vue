@@ -2,127 +2,153 @@
   <div class="inventory-page">
     <div class="page-header">
       <div>
-        <h1>Inventario</h1>
-        <p>Control de existencias de videojuegos de PsyShop.</p>
+        <h1 class="glow-text">Inventario</h1>
+        <p class="crumb">Control de existencias de videojuegos de PsyShop.</p>
       </div>
 
-      <button @click="cargarInventario" :disabled="cargando">
+      <button class="btn-neon" @click="cargarInventario" :disabled="cargando">
+        <span class="btn-icon">↻</span>
         {{ cargando ? 'Cargando...' : 'Actualizar inventario' }}
       </button>
     </div>
 
     <div class="stats-grid">
       <div class="stat-card">
-        <span>Total de videojuegos</span>
-        <strong>{{ inventario.length }}</strong>
+        <span class="stat-label">Total de videojuegos</span>
+        <strong class="stat-value">{{ inventario.length }}</strong>
       </div>
 
       <div class="stat-card">
-        <span>Unidades disponibles</span>
-        <strong>{{ totalUnidades }}</strong>
+        <span class="stat-label">Unidades disponibles</span>
+        <strong class="stat-value text-cyan">{{ totalUnidades }}</strong>
       </div>
 
       <div class="stat-card warning-card">
-        <span>Stock bajo</span>
-        <strong>{{ productosStockBajo }}</strong>
+        <span class="stat-label">Stock bajo</span>
+        <strong class="stat-value text-warn">{{ productosStockBajo }}</strong>
       </div>
 
-      <div class="stat-card">
-        <span>Sin existencias</span>
-        <strong>{{ productosAgotados }}</strong>
+      <div class="stat-card error-card">
+        <span class="stat-label">Sin existencias</span>
+        <strong class="stat-value text-hot">{{ productosAgotados }}</strong>
       </div>
     </div>
 
-    <div class="filters">
-      <input v-model="busqueda" type="search" placeholder="Buscar videojuego..." />
+    <div class="admin-card content-card">
+      <div class="card-header filters">
+        <div class="filter-group">
+          <input class="psy-input" v-model="busqueda" type="search" placeholder="Buscar videojuego..." />
+        </div>
+        <div class="filter-group">
+          <select class="psy-input" v-model="filtroStock">
+            <option value="todos">Todos los productos</option>
+            <option value="bajo">Stock bajo (1 a 5)</option>
+            <option value="agotado">Agotados</option>
+            <option value="disponible">Stock normal</option>
+          </select>
+        </div>
+      </div>
 
-      <select v-model="filtroStock">
-        <option value="todos">Todos los productos</option>
-        <option value="bajo">Stock bajo (1 a 5)</option>
-        <option value="agotado">Agotados</option>
-        <option value="disponible">Stock normal</option>
-      </select>
+      <div class="card-body">
+        <p v-if="error" class="message error">{{ error }}</p>
+        <p v-if="cargando" class="empty-state">Cargando inventario...</p>
+
+        <div v-if="!cargando && !error" class="table-container">
+          <table class="psy-table">
+            <thead>
+              <tr>
+                <th>Videojuego</th>
+                <th>Plataforma</th>
+                <th>Precio</th>
+                <th>Existencias</th>
+                <th>Estado del stock</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr v-for="juego in inventarioFiltrado" :key="juego.id">
+                <td>
+                  <div class="game-name">{{ juego.title }}</div>
+                  <small class="id-text">ID: {{ juego.id }}</small>
+                </td>
+
+                <td><span class="badge">{{ juego.platform }}</span></td>
+
+                <td class="price">{{ formatearPrecio(juego.price) }}</td>
+
+                <td>
+                  <strong class="stock-amount">{{ juego.stock }}</strong>
+                  <span class="unit-label"> un.</span>
+                </td>
+
+                <td>
+                  <span class="status-dot" :class="claseStock(juego.stock)"></span>
+                  {{ estadoStock(juego.stock) }}
+                </td>
+
+                <td>
+                  <button class="btn-icon-only edit" @click="editarStock(juego)" aria-label="Editar Stock"
+                    title="Editar Stock">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round">
+                      <path d="M12 20h9"></path>
+                      <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                    </svg>
+                  </button>
+                </td>
+              </tr>
+
+              <tr v-if="inventarioFiltrado.length === 0">
+                <td colspan="6" class="empty-state">
+                  No se encontraron videojuegos para este filtro.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="footer-note crumb">
+          El inventario se consulta desde la API de Laravel.
+          Los pedidos registrados descuentan unidades automáticamente.
+        </p>
+      </div>
     </div>
-
-    <p v-if="error" class="error">{{ error }}</p>
-    <p v-if="cargando" class="info">Cargando inventario...</p>
-
-    <div v-if="!cargando && !error" class="table-container">
-      <table>
-        <thead>
-          <tr>
-            <th>Videojuego</th>
-            <th>Plataforma</th>
-            <th>Precio</th>
-            <th>Existencias</th>
-            <th>Estado del stock</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr v-for="juego in inventarioFiltrado" :key="juego.id">
-            <td>
-              <div class="game-name">{{ juego.title }}</div>
-              <small>ID: {{ juego.id }}</small>
-            </td>
-
-            <td>{{ juego.platform }}</td>
-
-            <td>{{ formatearPrecio(juego.price) }}</td>
-
-            <td>
-              <strong>{{ juego.stock }}</strong>
-              <span class="unit-label"> unidades</span>
-            </td>
-
-            <td>
-              <span class="stock-badge" :class="claseStock(juego.stock)">
-                {{ estadoStock(juego.stock) }}
-              </span>
-            </td>
-            <td>
-              <button class="edit-stock-button" @click="editarStock(juego)">
-                Editar stock
-              </button>
-            </td>
-          </tr>
-
-          <tr v-if="inventarioFiltrado.length === 0">
-            <td colspan="5" class="empty">
-              No se encontraron videojuegos para este filtro.
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <p class="footer-note">
-      El inventario se consulta desde la API de Laravel.
-      Los pedidos registrados descuentan unidades automáticamente.
-    </p>
   </div>
+
   <!-- Modal de Edición de Stock -->
-  <div v-if="mostrarModal" class="modal-overlay" @click.self="cerrarModal">
-    <div class="modal-card">
-      <h3>Modificar existencias</h3>
+  <div v-if="mostrarModal" class="confirm-overlay" @click.self="cerrarModal">
+    <div class="confirm-dialog">
+      <div class="confirm-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path
+            d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
+          </path>
+          <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+          <line x1="12" y1="22.08" x2="12" y2="12"></line>
+        </svg>
+      </div>
+
+      <h2>Modificar existencias</h2>
       <p>
         Nuevas existencias para: <br>
-        <strong class="text-highlight">{{ juegoSeleccionado?.title }}</strong>
+        <strong class="text-highlight">"{{ juegoSeleccionado?.title }}"</strong>
       </p>
 
       <div class="modal-input-group">
-        <label>Cantidad en inventario:</label>
-        <input type="number" v-model.number="nuevoStock" min="0" step="1" @keyup.enter="guardarStock" />
+        <label class="psy-label">Cantidad en inventario:</label>
+        <input class="psy-input" type="number" v-model.number="nuevoStock" min="0" step="1"
+          @keyup.enter="guardarStock" />
       </div>
 
-      <p v-if="errorModal" class="error modal-error">{{ errorModal }}</p>
+      <p v-if="errorModal" class="message error modal-error">{{ errorModal }}</p>
 
-      <div class="modal-actions">
-        <button class="btn-cancel" @click="cerrarModal" :disabled="guardandoStock">
+      <div class="confirm-actions">
+        <button class="confirm-cancel" @click="cerrarModal" :disabled="guardandoStock">
           Cancelar
         </button>
-        <button class="btn-save" @click="guardarStock" :disabled="guardandoStock">
+        <button class="confirm-ok" @click="guardarStock" :disabled="guardandoStock">
           {{ guardandoStock ? 'Guardando...' : 'Guardar stock' }}
         </button>
       </div>
@@ -141,7 +167,7 @@ const api = axios.create({
 })
 
 api.interceptors.request.use(config => {
-  const token = localStorage.getItem('token'); // Cambia 'token' por el nombre que uses
+  const token = localStorage.getItem('token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -221,11 +247,8 @@ export default {
     this.cargarInventario()
   },
 
-
   methods: {
-
     editarStock(juego) {
-      // Abre el modal y carga los datos del juego seleccionado
       this.juegoSeleccionado = juego;
       this.nuevoStock = Number(juego.stock);
       this.errorModal = '';
@@ -233,7 +256,6 @@ export default {
     },
 
     cerrarModal() {
-      // Cierra el modal y limpia los datos
       this.mostrarModal = false;
       this.juegoSeleccionado = null;
       this.errorModal = '';
@@ -312,292 +334,390 @@ export default {
 </script>
 
 <style scoped>
+/* Las variables como --void, --deck, --cyan etc. se heredan de App.vue */
+
 .inventory-page {
-  padding: 28px;
-  color: #e5e7eb;
+  animation: fade-in 0.3s ease;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .page-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-end;
   gap: 16px;
-  margin-bottom: 24px;
+  margin-bottom: 30px;
 }
 
-h1 {
+.glow-text {
   margin: 0 0 8px;
-  color: #fff;
-  font-size: 28px;
+  font-size: clamp(1.8rem, 4vw, 2.4rem);
+  text-shadow: 0 0 20px rgba(122, 92, 255, 0.3);
 }
 
-.page-header p {
+.crumb {
   margin: 0;
-  color: #9ca3af;
+  color: var(--dim);
+  font-size: 0.9rem;
 }
 
-/* Estilos del Modal */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(3px);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
+/* Tarjetas globales */
+.admin-card {
+  background: var(--deck);
+  border: 1px solid var(--edge);
+  clip-path: var(--cut);
+  margin-bottom: 30px;
 }
 
-.modal-card {
-  background: #111827;
-  border: 1px solid #374151;
-  border-radius: 12px;
+.card-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--edge);
+  background: rgba(130, 160, 255, 0.02);
+}
+
+.card-body {
   padding: 24px;
-  width: 90%;
-  max-width: 400px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
 }
 
-.modal-card h3 {
-  margin-top: 0;
+/* Grid de Estadísticas */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.stat-card {
+  padding: 22px;
+  background: var(--deck);
+  border: 1px solid var(--edge);
+  clip-path: var(--cut);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  border-color: rgba(130, 160, 255, 0.4);
+}
+
+.warning-card {
+  border-color: rgba(255, 176, 46, 0.3);
+  background: rgba(255, 176, 46, 0.05);
+}
+
+.error-card {
+  border-color: rgba(255, 61, 139, 0.3);
+  background: rgba(255, 61, 139, 0.05);
+}
+
+.stat-label {
+  display: block;
   margin-bottom: 12px;
-  color: #fff;
-  font-size: 20px;
+  color: var(--dim);
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
-.text-highlight {
-  color: #60a5fa;
-  font-size: 16px;
+.stat-value {
+  display: block;
+  font-size: 2.2rem;
+  color: var(--text);
+  line-height: 1;
+}
+
+.text-cyan {
+  color: var(--cyan) !important;
+}
+
+.text-warn {
+  color: var(--warn) !important;
+}
+
+.text-hot {
+  color: var(--hot) !important;
+}
+
+/* Controles de filtro */
+.filters {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.filter-group {
+  flex: 1;
+}
+
+.filter-group:last-child {
+  flex: 0 0 280px;
+}
+
+.psy-input {
+  width: 100%;
+  padding: 12px 14px;
+  background: rgba(5, 6, 15, 0.5);
+  border: 1px solid rgba(130, 160, 255, 0.15);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  clip-path: var(--cut-sm);
+  transition: all 0.2s;
+  outline: none;
+}
+
+.psy-input:focus {
+  background: var(--void);
+  border-color: var(--cyan);
+  box-shadow: 0 0 12px rgba(25, 227, 255, 0.15);
+}
+
+.psy-input::placeholder {
+  color: rgba(140, 149, 184, 0.4);
+}
+
+/* Tablas */
+.table-container {
+  overflow-x: auto;
+}
+
+.psy-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.psy-table th {
+  padding: 0 12px 16px;
+  color: var(--dim);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--edge);
+}
+
+.psy-table td {
+  padding: 16px 12px;
+  border-bottom: 1px solid rgba(130, 160, 255, 0.08);
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.psy-table tbody tr {
+  transition: background 0.2s;
+}
+
+.psy-table tbody tr:hover {
+  background: rgba(130, 160, 255, 0.03);
+}
+
+.game-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: var(--text);
+}
+
+.id-text {
+  display: block;
+  margin-top: 4px;
+  color: var(--dim);
+  font-size: 0.85rem;
+}
+
+.price {
+  color: var(--cyan);
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+
+.stock-amount {
+  font-size: 1.1rem;
+  color: var(--text);
+}
+
+.unit-label {
+  color: var(--dim);
+  font-size: 0.85rem;
+}
+
+/* Badges y estados */
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  background: rgba(122, 92, 255, 0.15);
+  border: 1px solid rgba(122, 92, 255, 0.3);
+  color: #bfaaff;
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 700;
+  border-radius: 4px;
+}
+
+.status-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 6px;
+  border-radius: 50%;
+}
+
+.stock-ok {
+  background: var(--ok);
+  box-shadow: 0 0 8px var(--ok);
+}
+
+.stock-low {
+  background: var(--warn);
+  box-shadow: 0 0 8px var(--warn);
+}
+
+.stock-empty {
+  background: var(--hot);
+  box-shadow: 0 0 8px var(--hot);
+}
+
+/* Botones principales y secundarios */
+.btn-neon {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: linear-gradient(90deg, rgba(25, 227, 255, 0.1), rgba(122, 92, 255, 0.1));
+  border: 1px solid var(--cyan);
+  color: var(--cyan);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  cursor: pointer;
+  clip-path: var(--cut-sm);
+  transition: all 0.2s;
+  box-shadow: inset 0 0 15px rgba(25, 227, 255, 0.1);
+}
+
+.btn-neon:hover:not(:disabled) {
+  background: var(--cyan);
+  color: #031018;
+  box-shadow: 0 0 20px rgba(25, 227, 255, 0.4);
+}
+
+.btn-neon:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-icon-only {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: rgba(130, 160, 255, 0.05);
+  color: var(--dim);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-icon-only svg {
+  width: 16px;
+  height: 16px;
+}
+
+.btn-icon-only.edit:hover {
+  background: rgba(122, 92, 255, 0.15);
+  border-color: var(--violet);
+  color: #bfaaff;
+}
+
+/* Modal de edición (heredado de global pero con ajustes para input) */
+.psy-label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: var(--dim);
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 8px;
 }
 
 .modal-input-group {
   margin: 20px 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.modal-input-group label {
-  color: #9ca3af;
-  font-size: 14px;
-}
-
-.modal-input-group input {
-  padding: 10px 12px;
-  border: 1px solid #374151;
-  border-radius: 8px;
-  background: #1f2937;
-  color: #f9fafb;
-  font-size: 16px;
-  outline: none;
-}
-
-.modal-input-group input:focus {
-  border-color: #2563eb;
-}
-
-.modal-error {
-  margin-top: 0;
-  margin-bottom: 16px;
-  font-size: 13px;
-}
-
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-}
-
-.btn-cancel {
-  background: transparent;
-  border: 1px solid #4b5563;
-  color: #d1d5db;
-}
-
-.btn-cancel:hover:not(:disabled) {
-  background: #374151;
-}
-
-.btn-save {
-  background: #2563eb;
-}
-
-.btn-save:hover:not(:disabled) {
-  background: #1d4ed8;
-}
-
-button {
-  padding: 10px 16px;
-  border: none;
-  border-radius: 8px;
-  background: #2563eb;
-  color: #fff;
-  cursor: pointer;
-}
-
-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-.stat-card {
-  padding: 20px;
-  border: 1px solid #374151;
-  border-radius: 12px;
-  background: #111827;
-}
-
-.stat-card span {
-  display: block;
-  margin-bottom: 12px;
-  color: #9ca3af;
-  font-size: 13px;
-}
-
-.stat-card strong {
-  color: #fff;
-  font-size: 28px;
-}
-
-.warning-card strong {
-  color: #fbbf24;
-}
-
-.filters {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 20px;
-}
-
-.filters input,
-.filters select {
-  min-width: 0;
-  padding: 11px 12px;
-  border: 1px solid #374151;
-  border-radius: 8px;
-  background: #111827;
-  color: #f9fafb;
-}
-
-.filters input {
-  flex: 1;
-}
-
-.filters select {
-  width: 220px;
-}
-
-.table-container {
-  overflow-x: auto;
-  border: 1px solid #374151;
-  border-radius: 10px;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: #111827;
-}
-
-th,
-td {
-  padding: 15px;
   text-align: left;
-  border-bottom: 1px solid #374151;
 }
 
-th {
-  background: #1f2937;
-  color: #d1d5db;
-  white-space: nowrap;
-}
-
-td small {
-  display: block;
-  margin-top: 5px;
-  color: #9ca3af;
-}
-
-.game-name {
-  color: #fff;
+/* Mensajes de alerta */
+.message {
+  padding: 14px 18px;
+  margin-bottom: 24px;
+  font-family: var(--font-display);
   font-weight: 600;
+  clip-path: var(--cut-sm);
+  border-left: 3px solid transparent;
 }
 
-.unit-label {
-  color: #9ca3af;
-  font-size: 12px;
+.message.error {
+  background: rgba(255, 61, 139, 0.1);
+  border-left-color: var(--hot);
+  color: #ff8fb8;
 }
 
-.stock-badge {
-  display: inline-block;
-  padding: 6px 10px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.stock-ok {
-  background: #14532d;
-  color: #bbf7d0;
-}
-
-.stock-low {
-  background: #713f12;
-  color: #fde68a;
-}
-
-.stock-empty {
-  background: #7f1d1d;
-  color: #fecaca;
-}
-
-.error {
-  padding: 12px;
-  border-radius: 8px;
-  background: #7f1d1d;
-  color: #fecaca;
-}
-
-.info,
-.empty {
-  color: #9ca3af;
+.empty-state {
+  padding: 40px 0;
+  text-align: center;
+  color: var(--dim);
+  font-family: var(--font-display);
+  font-size: 1.1rem;
 }
 
 .footer-note {
-  margin-top: 18px;
-  color: #9ca3af;
-  font-size: 13px;
+  margin-top: 24px;
 }
 
-@media (max-width: 1000px) {
+/* Responsive */
+@media (max-width: 1100px) {
   .stats-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-@media (max-width: 600px) {
-  .inventory-page {
-    padding: 16px;
-  }
-
-  .page-header,
-  .filters {
-    align-items: stretch;
+@media (max-width: 768px) {
+  .page-header {
     flex-direction: column;
+    align-items: flex-start;
   }
 
-  .filters select {
-    width: 100%;
+  .filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-group:last-child {
+    flex: none;
+  }
+}
+
+@media (max-width: 550px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
   }
 }
 </style>

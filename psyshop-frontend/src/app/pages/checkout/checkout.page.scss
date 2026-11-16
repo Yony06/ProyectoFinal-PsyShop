@@ -263,3 +263,11 @@ ion-textarea { min-height: 120px; }
 @media (min-width: 560px) {
   .field-row { grid-template-columns: 1fr 1fr; }
 }
+
+// ---------- Botón para volver al carrito ----------
+.back-button {
+  --color: var(--text);
+  font-family: var(--font-display);
+  font-weight: 600;
+  &:hover { --color: var(--cyan); }
+}

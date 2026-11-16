@@ -1,4 +1,3 @@
-
 import {
   Component,
   OnInit,
@@ -7,10 +6,9 @@ import {
   ChangeDetectorRef
 } from '@angular/core';
 
-import { CurrencyPipe } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { CommonModule, CurrencyPipe } from '@angular/common';
+import { RouterLink, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { ToastController } from '@ionic/angular';
 
 import {
   IonHeader,
@@ -26,12 +24,12 @@ import {
   IonButton,
   IonIcon,
   IonButtons,
-  IonBadge
+  IonBadge,
+  ToastController
 } from '@ionic/angular';
 
 import { GameService, Game } from '../services/game';
 import { CartService } from '../services/cart.service';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -39,6 +37,9 @@ import { Router } from '@angular/router';
   styleUrls: ['home.page.scss'],
   standalone: true,
   imports: [
+    CommonModule,
+    CurrencyPipe,
+    RouterLink,
     IonHeader,
     IonToolbar,
     IonTitle,
@@ -52,19 +53,17 @@ import { Router } from '@angular/router';
     IonButton,
     IonIcon,
     IonButtons,
-    IonBadge,
-    CurrencyPipe,
-    RouterLink
+    IonBadge
   ]
 })
 export class HomePage implements OnInit, OnDestroy {
   private gameService = inject(GameService);
   private cdr = inject(ChangeDetectorRef);
   private cartService = inject(CartService);
-   private toastCtrl = inject(ToastController);
+  private toastCtrl = inject(ToastController);
   private router = inject(Router);
+  
   private toastActual?: HTMLIonToastElement;
-
   private cartSubscription?: Subscription;
 
   games: Game[] = [];
@@ -83,8 +82,6 @@ export class HomePage implements OnInit, OnDestroy {
       this.totalItemsCarrito = this.cartService.totalItems;
       this.cdr.detectChanges();
     });
-    
-
 
     // Cargar videojuegos desde Laravel.
     this.gameService.getGames().subscribe({
@@ -95,15 +92,12 @@ export class HomePage implements OnInit, OnDestroy {
       },
       error: (error) => {
         console.error('Error al cargar videojuegos:', error);
-
         this.errorMessage =
           'No se pudieron cargar los videojuegos. Verifica la conexión con el servidor.';
-
         this.loading = false;
         this.cdr.detectChanges();
       }
     });
-    
   }
 
   ngOnDestroy(): void {
@@ -117,31 +111,41 @@ export class HomePage implements OnInit, OnDestroy {
       this.mostrarToast(`${game.title} se agregó al carrito.`);
     } else {
       this.mostrarToast(
-        'No hay suficiente stock disponible para agregar este videojuego.'
+        'No hay suficiente stock disponible para agregar este videojuego.',
+        '',
+        'error'
       );
     }
   }
 
- async mostrarToast(
+async mostrarToast(
   titulo: string,
   mensaje: string = '',
   tipo: 'ok' | 'error' = 'ok',
-  conBotonCarrito = false
+  conBotonCarrito = false      // en el checkout puedes borrar este parámetro
 ) {
   await this.toastActual?.dismiss();
 
-  this.toastActual = await this.toastCtrl.create({
-    // Con un solo texto: se muestra como mensaje. Con dos: título + mensaje.
+  // Si la barra de pestañas se ve, el aviso se ancla a ella: aparece justo encima
+  const barra = document.querySelector('ion-tab-bar') as HTMLElement | null;
+  const barraVisible = !!barra && barra.offsetParent !== null;
+
+  const opciones: any = {
     header: mensaje ? titulo : undefined,
     message: mensaje || titulo,
-    duration: 2800,
-    position: 'top',
+    duration: 3000,
+    position: 'bottom',
     cssClass: tipo === 'error' ? 'psy-toast psy-toast--error' : 'psy-toast',
     buttons: conBotonCarrito
       ? [{ text: 'Ver carrito', handler: () => { this.router.navigate(['/cart']); } }]
       : [{ text: 'Cerrar', role: 'cancel' }],
-  });
+  };
 
+  if (barraVisible) {
+    opciones.positionAnchor = barra;
+  }
+
+  this.toastActual = await this.toastCtrl.create(opciones);
   await this.toastActual.present();
 }
 
@@ -216,13 +220,12 @@ export class HomePage implements OnInit, OnDestroy {
       block: 'start'
     });
   }
+
   filtrarPlataforma(valor: string) {
-  this.onPlatformChange({ detail: { value: valor } } as CustomEvent);
-}
+    this.onPlatformChange({ detail: { value: valor } } as CustomEvent);
+  }
 
-filtrarGenero(valor: string) {
-  this.onGenreChange({ detail: { value: valor } } as CustomEvent);
-}
-
-
+  filtrarGenero(valor: string) {
+    this.onGenreChange({ detail: { value: valor } } as CustomEvent);
+  }
 }

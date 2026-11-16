@@ -660,3 +660,33 @@ ion-content {
   .hero-grid-floor { animation: none; }
   .game-card { transition: none; }
 }
+
+// ---------- Banner adaptado a celular y tablet ----------
+@media (max-width: 900px) {
+  // El título empieza dentro de la parte baja del banner
+  .hero {
+    padding-top: clamp(120px, 36vw, 200px);
+  }
+
+  // La altura del banner depende del ancho de la pantalla
+  .hero-banner,
+  .hero-shade {
+    bottom: auto;
+    height: clamp(260px, 70vw, 380px);
+  }
+
+  .hero-banner {
+    object-fit: cover;
+    object-position: center top;
+  }
+
+  // La imagen se funde hacia el fondo oscuro, así el texto se lee bien
+  .hero-shade {
+    background: linear-gradient(
+      180deg,
+      rgba(5, 6, 15, 0.1) 0%,
+      rgba(5, 6, 15, 0.55) 55%,
+      var(--void) 100%
+    );
+  }
+}

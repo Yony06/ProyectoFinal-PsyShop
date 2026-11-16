@@ -12,6 +12,7 @@ import {
   ToastController,
   IonHeader,
   IonToolbar,
+  IonButtons,
   IonTitle,
   IonContent,
   IonButton,
@@ -21,6 +22,9 @@ import {
   IonText,
   IonSpinner
 } from '@ionic/angular';
+
+import { addIcons } from 'ionicons';
+import { arrowBackOutline } from 'ionicons/icons';
 
 import { CartService } from '../../services/cart.service';
 import {
@@ -40,6 +44,7 @@ import {
     RouterLink,
     IonHeader,
     IonToolbar,
+    IonButtons,
     IonTitle,
     IonContent,
     IonButton,
@@ -57,6 +62,28 @@ export class CheckoutPage {
   private cdr = inject(ChangeDetectorRef);
   private toastCtrl = inject(ToastController);
   private toastActual?: HTMLIonToastElement;
+
+  constructor() {
+    addIcons({ arrowBackOutline });
+  }
+
+  // Cada vez que entras al checkout, se rellenan tus datos de la cuenta
+  ionViewWillEnter(): void {
+    this.precargarDatosDeLaCuenta();
+  }
+
+  // Si hay sesión iniciada, se cargan el correo y el nombre de la cuenta.
+  // Sin sesión (o si falla), el formulario simplemente queda vacío.
+  private precargarDatosDeLaCuenta(): void {
+    this.orderService.getMe().subscribe({
+      next: (user) => {
+        if (!this.customer_email) this.customer_email = user.email;
+        if (!this.customer_name) this.customer_name = user.name;
+        this.cdr.detectChanges();
+      },
+      error: () => { /* sin sesión: no pasa nada */ }
+    });
+  }
 
   precioSubtotal(precio: string | number, cantidad: number): number {
     return Number(precio) * cantidad;
@@ -80,33 +107,37 @@ export class CheckoutPage {
     );
   }
 
-  // Aviso con el estilo de PsyShop (usa los estilos de global.scss)
-  async mostrarToast(
-    titulo: string,
-    mensaje: string = '',
-    tipo: 'ok' | 'error' = 'ok'
-  ) {
-    await this.toastActual?.dismiss();
+ 
+async mostrarToast(
+  titulo: string,
+  mensaje: string = '',
+  tipo: 'ok' | 'error' = 'ok',
+  conBotonCarrito = false      // en el checkout puedes borrar este parámetro
+) {
+  await this.toastActual?.dismiss();
 
-    // Solo sube el aviso si la barra de pestañas está realmente visible
-    const barra = document.querySelector('ion-tab-bar') as HTMLElement | null;
-    const hayTabs = !!barra && barra.offsetParent !== null;
+  // Si la barra de pestañas se ve, el aviso se ancla a ella: aparece justo encima
+  const barra = document.querySelector('ion-tab-bar') as HTMLElement | null;
+  const barraVisible = !!barra && barra.offsetParent !== null;
 
-    const clases = ['psy-toast'];
-    if (tipo === 'error') clases.push('psy-toast--error');
-    if (hayTabs) clases.push('psy-toast--above-tabs');
+  const opciones: any = {
+    header: mensaje ? titulo : undefined,
+    message: mensaje || titulo,
+    duration: 3000,
+    position: 'bottom',
+    cssClass: tipo === 'error' ? 'psy-toast psy-toast--error' : 'psy-toast',
+    buttons: conBotonCarrito
+      ? [{ text: 'Ver carrito', handler: () => { this.router.navigate(['/cart']); } }]
+      : [{ text: 'Cerrar', role: 'cancel' }],
+  };
 
-    this.toastActual = await this.toastCtrl.create({
-      header: mensaje ? titulo : undefined,
-      message: mensaje || titulo,
-      duration: 3000,
-      position: 'bottom',
-      cssClass: clases,
-      buttons: [{ text: 'Cerrar', role: 'cancel' }],
-    });
-
-    await this.toastActual.present();
+  if (barraVisible) {
+    opciones.positionAnchor = barra;
   }
+
+  this.toastActual = await this.toastCtrl.create(opciones);
+  await this.toastActual.present();
+}
 
   enviarPedido(): void {
     this.errorMessage = '';
@@ -156,7 +187,7 @@ export class CheckoutPage {
         // Antes: alert(`¡Pedido registrado! Tu número de pedido es ...`)
         this.mostrarToast(
           `Pedido #${response.order.id} registrado`,
-          'Quedó pendiente de confirmación.'
+          'Te enviaremos la confirmación a tu correo.'
         );
 
         this.router.navigate(['/tabs/inicio']);
